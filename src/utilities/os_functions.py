@@ -1,15 +1,13 @@
 import os
 from subprocess import run, PIPE
-from src.rename_media.name_functions import create_calibre_image_name
+
 from typing import Iterable, Callable
-from PIL import Image
+
 from src.exceptions.exceptions import FileSystemError
 from src.factories.factories import create_file
 from src.data_types.DirectoryFile import DirectoryFile
 import logging
-from dotenv import load_dotenv
 
-load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -69,21 +67,6 @@ def is_compressed(file_name: str) -> bool:
 def get_images(directory: str) -> Iterable[DirectoryFile]:
     """function to get list of files from a directory with a image (jpg,png) extension"""
     return [file for file in get_files(directory) if is_file_an_image(file.name)]
-
-
-def rename_page_images(
-    directory_out: str, files: Iterable[DirectoryFile], name_function: Callable
-):
-    """rename image file in a directory"""
-    story = os.getenv("STORY")
-    chapter = os.getenv("CHAPTER")
-
-    for page_number, file in enumerate(files):
-        new_name = name_function(story, chapter, page_number)
-        img = Image.open(file.path)
-        new_path = create_new_file_path(directory_out, new_name)
-        img.save(new_path)
-        os.remove(file.path)
 
 
 def rename_files(rename_mapping: dict[str, str]):
