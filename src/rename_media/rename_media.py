@@ -2,7 +2,6 @@ from src.data_types.service_constants import *
 from src.data_types.ServiceMetaData import ServiceMetaData
 from src.utilities.app_functions import deprecate_function
 from src.utilities.os_functions import (
-    rename_page_images,
     get_files,
     rename_files,
     get_sorted_files,
@@ -53,15 +52,6 @@ def create_rename_mapping_with_filename(
         rename_mapping[file.path] = new_path
 
     return rename_mapping
-
-
-def rename_image_to_calibre_image(args: ServiceArguments):
-    deprecate_function()
-    directory_in = args.directory_in
-    directory_out = args.directory_out
-
-    directory_entries = get_files(directory_in)
-    rename_page_images(directory_out, directory_entries, create_calibre_image_name)
 
 
 def create_jellyfin_episodes_mapping_with_seasoned_name(args):
