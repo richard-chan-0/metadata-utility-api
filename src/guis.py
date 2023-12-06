@@ -1,7 +1,5 @@
 from src.tkinter.gui import Gui
 from src.data_types.service_constants import *
-from src.tkinter.rename_videos_gui import RenameVideosGui
-from src.tkinter.rename_comics_gui import RenameComicsGui
 from src.tkinter.ffmpeg_gui import FfmpegGui
 from src.exceptions.exceptions import InvalidService
 
