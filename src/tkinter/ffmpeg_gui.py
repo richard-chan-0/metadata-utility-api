@@ -7,6 +7,8 @@ from typing import Iterable
 from src.tkinter.gui import Gui
 from src.exceptions.exceptions import ServiceError
 from src.ffmpeg.ffmpeg_builder import FfmpegCommandBuilder
+from PIL import Image, ImageTk
+
 
 from logging import getLogger
 
@@ -21,6 +23,7 @@ class FfmpegGui(Gui):
     def __init__(self, root: Tk):
         self.__root = root
         self.__root.title("FFMPEG Default Changer")
+        self.__add_button_image = None
 
         self.__file_entry_row = 0
         self.__inspect_file_button_row = 1
@@ -34,13 +37,19 @@ class FfmpegGui(Gui):
         self.__file_entry_text = None
         self.__default_attachment = None
         self.__default_audio = None
-        self.__default_subtitle = None
+        self.__default_subtitles = []
 
         self.__service_message = None
+        self.__subtitle_frame = None
         self.__subtitles_list = []
+        self.__num_subtitle_dropdowns = 0
         self.__audio_list = []
         self.__attachments_list = []
         self.__commands = []
+
+    def __setup_add_button_image(self):
+        my_img = create_photoimage("resources/add_button.png", (20, 20))
+        self.__add_button_image = my_img
 
     def __create_window(self):
         width = 900
@@ -53,15 +62,16 @@ class FfmpegGui(Gui):
         self,
         file_path: str,
         audio: str,
-        subtitle: str,
+        subtitles: Iterable[str],
         attachment: str,
         output_file_path: str,
     ) -> Iterable[str]:
         builder = FfmpegCommandBuilder(file_path)
         builder.add_stream(audio, StreamType.AUDIO)
-        builder.add_stream(subtitle, StreamType.SUBTITLE)
+        for subtitle in subtitles:
+            builder.add_stream(subtitle, StreamType.SUBTITLE)
         builder.set_default(audio, StreamType.AUDIO)
-        builder.set_default(subtitle, StreamType.SUBTITLE)
+        builder.set_default(subtitle[0], StreamType.SUBTITLE)
 
         if attachment:
             builder.add_stream(attachment, StreamType.ATTACHMENT)
@@ -73,7 +83,7 @@ class FfmpegGui(Gui):
     def __set_default_streams(self):
         path = get_widget_value(self.__file_entry_text)
         audio_number, _, _ = get_widget_value(self.__default_audio).split(":")
-        subtitle_number, _, _ = get_widget_value(self.__default_subtitle).split(":")
+        subtitle_number, _, _ = get_widget_value(self.__default_subtitles)
         # attachment, _ = get_widget_value(self.__default_attachment).split(": ")
         self.log_to_console("")
         files = get_files(path)
@@ -87,7 +97,7 @@ class FfmpegGui(Gui):
             self.__build_command(
                 file_path=file.path,
                 audio=audio_number,
-                subtitle=subtitle_number,
+                subtitles=subtitle_number,
                 attachment=None,
                 output_file_path=f"{out_path}/{file.name}",
             )
@@ -113,7 +123,7 @@ class FfmpegGui(Gui):
             ":"
         )
         _, subtitle_name, subtitle_language = get_widget_value(
-            self.__default_subtitle
+            self.__default_subtitles
         ).split(":")
 
         self.log_to_console("")
@@ -146,7 +156,7 @@ class FfmpegGui(Gui):
             command = self.__build_command(
                 file_path=file.path,
                 audio=new_audio_number,
-                subtitle=new_subtitle_number,
+                subtitles=new_subtitle_number,
                 attachment=None,
                 output_file_path=f"{out_path}/{file.name}",
             )
@@ -168,19 +178,48 @@ class FfmpegGui(Gui):
             lambda x: self.log_to_console(f"selected {x}"),
         )
 
+    def __add_extra_subtitle_dropdown(self):
+        if self.__num_subtitle_dropdowns == 3:
+            return
+        self.__num_subtitle_dropdowns += 1
+        default_subtitle, _ = create_dropdown(
+            root=self.__subtitle_frame,
+            options=self.__subtitles_list,
+            row_position=self.__num_subtitle_dropdowns,
+            column=0,
+            command=lambda x: self.log_to_console(f"selected {x}"),
+        )
+        self.__default_subtitles.append(default_subtitle)
+
     def __add_subtitle_component(self):
+        self.__subtitle_frame = create_frame(
+            root=self.__root,
+            row=self.__subtitles_dropdown_row,
+            column=1,
+            options=self.DEFAULT_OPTIONS,
+        )
         create_label(
             self.__root,
             "Subtitle Streams",
             self.__subtitles_dropdown_row,
             self.DEFAULT_OPTIONS,
         )
-        self.__default_subtitle, _ = create_dropdown(
-            self.__root,
-            self.__subtitles_list,
-            self.__subtitles_dropdown_row,
-            lambda x: self.log_to_console(f"selected {x}"),
+        default_subtitle, _ = create_dropdown(
+            root=self.__subtitle_frame,
+            options=self.__subtitles_list,
+            row_position=0,
+            column=0,
+            command=lambda x: self.log_to_console(f"selected {x}"),
         )
+        self.__setup_add_button_image()
+        create_image_buttoon(
+            self.__subtitle_frame,
+            self.__add_button_image,
+            row_position=0,
+            col_position=1,
+            command=self.__add_extra_subtitle_dropdown,
+        )
+        self.__default_subtitles.append(default_subtitle)
 
     def __add_attachments_component(self):
         create_label(

@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter.messagebox import askokcancel
 from tkinter.scrolledtext import ScrolledText
 from typing import Iterable, Tuple, Callable
+from PIL import Image, ImageTk
 
 COLUMN_COMPONENT = "1"
 
@@ -18,7 +19,11 @@ def get_widget_value(widget: Variable):
 
 
 def create_dropdown(
-    root: Tk, options: Iterable[str], row_position: int, command: Callable
+    root: Tk,
+    options: Iterable[str],
+    row_position: int,
+    command: Callable,
+    column=COLUMN_COMPONENT,
 ) -> Tuple[Variable, Widget]:
     """function to create tkinter dropdown menu"""
     dropdown_option = StringVar()
@@ -27,7 +32,7 @@ def create_dropdown(
     dropdown_menu.config(width=DEFAULT_DROPMENU_WIDTH)
     dropdown_menu.grid(
         row=row_position,
-        column=COLUMN_COMPONENT,
+        column=column,
         pady=DEFAULT_PADDINGY,
         sticky=W,
     )
@@ -50,6 +55,13 @@ def create_buttoon(
     return button
 
 
+def create_image_buttoon(root: Tk, button_image, row_position, col_position, command):
+    """function to create a tkinter button with image"""
+    button = Button(root, image=button_image, command=command)
+    button.grid(row=row_position, column=col_position, sticky=W)
+    return button
+
+
 def create_label(
     root: Tk,
     text: str,
@@ -62,7 +74,7 @@ def create_label(
     label = Label(root, text=text)
     label.configure(**label_options)
     label.grid(
-        row=row, column=column, padx=DEFAULT_PADDINGX, pady=DEFAULT_PADDINGY, sticky=W
+        row=row, column=column, padx=DEFAULT_PADDINGX, pady=DEFAULT_PADDINGY, sticky=NW
     )
     return label
 
@@ -108,3 +120,9 @@ def create_input_field(root: Tk, row_position: str) -> Tuple[Variable, Widget]:
     entry = Entry(root, textvariable=input_field_text, width=DEFAULT_DROPMENU_WIDTH)
     entry.grid(row=row_position, column=COLUMN_COMPONENT, sticky=W)
     return (input_field_text, entry)
+
+
+def create_photoimage(file_path, dimensions) -> PhotoImage:
+    my_image = Image.open(file_path)
+    img = my_image.resize(dimensions)
+    return ImageTk.PhotoImage(img)
