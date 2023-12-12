@@ -18,6 +18,14 @@ def get_widget_value(widget: Variable):
     return "" if not widget else widget.get()
 
 
+def get_language_widget(widget):
+    try:
+        number, name, language = get_widget_value(widget).split(":")
+        return number, name, language
+    except ValueError:
+        return None, None, None
+
+
 def create_dropdown(
     root: Tk,
     options: Iterable[str],
@@ -122,7 +130,9 @@ def create_input_field(root: Tk, row_position: str) -> Tuple[Variable, Widget]:
     return (input_field_text, entry)
 
 
-def create_photoimage(file_path, dimensions) -> PhotoImage:
+def create_photoimage(file_path: str, dimensions: Tuple[int, int]) -> PhotoImage:
+    """takes an image path and returns photo image"""
     my_image = Image.open(file_path)
-    img = my_image.resize(dimensions)
-    return ImageTk.PhotoImage(img)
+    if dimensions:
+        my_image = my_image.resize(dimensions)
+    return ImageTk.PhotoImage(my_image)

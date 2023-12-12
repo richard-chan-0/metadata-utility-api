@@ -63,3 +63,31 @@ def parse_streams(streams: Iterable[dict]) -> dict[Iterable[MediaStream]]:
             media_streams[media_type].append(stream_data)
 
     return media_streams
+
+
+def get_matching_stream_numbers(stream_type, all_streams_details, media_streams):
+    new_subtitle_numbers = []
+
+    for subtitle_details in all_streams_details:
+        _, subtitle_name, subtitle_language = subtitle_details
+        new_subtitle_number = find_language_stream(
+            stream_type, media_streams, subtitle_name, subtitle_language
+        )
+        if new_subtitle_number == -1:
+            continue
+        new_subtitle_numbers.append(new_subtitle_number)
+    return new_subtitle_numbers
+
+
+def find_language_stream(
+    stream_key: str,
+    media_streams: dict[Iterable[MediaStream]],
+    find_title,
+    find_language,
+) -> int:
+    for index, stream in enumerate(media_streams.get(stream_key)):
+        title = stream.title if stream.title else "None"
+        language = stream.language if stream.language else "None"
+        if find_title == title and find_language == language:
+            return index
+    return -1

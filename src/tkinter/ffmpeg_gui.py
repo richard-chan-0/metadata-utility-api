@@ -36,7 +36,7 @@ class FfmpegGui(Gui):
 
         self.__file_entry_text = None
         self.__default_attachment = None
-        self.__default_audio = None
+        self.__default_audios = []
         self.__default_subtitles = []
 
         self.__service_message = None
@@ -48,7 +48,7 @@ class FfmpegGui(Gui):
         self.__commands = []
 
     def __setup_add_button_image(self):
-        my_img = create_photoimage("resources/add_button.png", (20, 20))
+        my_img = create_photoimage("resources/add_button.jpg", (20, 20))
         self.__add_button_image = my_img
 
     def __create_window(self):
@@ -68,10 +68,10 @@ class FfmpegGui(Gui):
     ) -> Iterable[str]:
         builder = FfmpegCommandBuilder(file_path)
         builder.add_stream(audio, StreamType.AUDIO)
-        for subtitle in subtitles:
+        for subtitle in set(subtitles):
             builder.add_stream(subtitle, StreamType.SUBTITLE)
         builder.set_default(audio, StreamType.AUDIO)
-        builder.set_default(subtitle[0], StreamType.SUBTITLE)
+        builder.set_default(subtitles[0], StreamType.SUBTITLE)
 
         if attachment:
             builder.add_stream(attachment, StreamType.ATTACHMENT)
@@ -82,9 +82,16 @@ class FfmpegGui(Gui):
 
     def __set_default_streams(self):
         path = get_widget_value(self.__file_entry_text)
-        audio_number, _, _ = get_widget_value(self.__default_audio).split(":")
-        subtitle_number, _, _ = get_widget_value(self.__default_subtitles)
+        audio_number, _, _ = get_language_widget(self.__default_audios[0])
+        subtitle_details = self.__get_all_subtitle_details(self.__default_subtitles)
+        subtitle_numbers = [
+            subtitle_number for subtitle_number, _, _ in subtitle_details
+        ]
         # attachment, _ = get_widget_value(self.__default_attachment).split(": ")
+        if not audio_number or not subtitle_numbers:
+            self.log_to_console("no values selected for conversion!")
+            return
+
         self.log_to_console("")
         files = get_files(path)
         if not files:
@@ -97,34 +104,28 @@ class FfmpegGui(Gui):
             self.__build_command(
                 file_path=file.path,
                 audio=audio_number,
-                subtitles=subtitle_number,
+                subtitles=subtitle_numbers,
                 attachment=None,
                 output_file_path=f"{out_path}/{file.name}",
             )
         ]
 
-    def __find_language_stream(
-        self,
-        stream_key: str,
-        stream_objs: dict[Iterable[MediaStream]],
-        find_title,
-        find_language,
-    ) -> int:
-        for index, stream in enumerate(stream_objs.get(stream_key)):
-            title = stream.title if stream.title else "None"
-            language = stream.language if stream.language else "None"
-            if find_title == title and find_language == language:
-                return index
-        return -1
+    def __get_all_subtitle_details(self, language_streams):
+        all_language_stream_details = []
+        for stream in language_streams:
+            stream_number, stream_name, stream_language = get_language_widget(stream)
+            if not stream_name and not stream_language:
+                continue
+            all_language_stream_details.append(
+                (stream_number, stream_name, stream_language)
+            )
+
+        return all_language_stream_details
 
     def __set_bulk_default_streams(self):
         path = get_widget_value(self.__file_entry_text)
-        _, audio_name, audio_language = get_widget_value(self.__default_audio).split(
-            ":"
-        )
-        _, subtitle_name, subtitle_language = get_widget_value(
-            self.__default_subtitles
-        ).split(":")
+        _, audio_name, audio_language = get_language_widget(self.__default_audios[0])
+        all_subtitle_details = self.__get_all_subtitle_details(self.__default_subtitles)
 
         self.log_to_console("")
         files = get_files(path)
@@ -138,16 +139,17 @@ class FfmpegGui(Gui):
             self.log_to_console(
                 f"building command for file {file.name}", is_clear=False
             )
-            streams = get_media_streams(file.path)
-            stream_objs = parse_streams(streams)
+            json_streams = get_media_streams(file.path)
+            media_streams = parse_streams(json_streams)
 
-            new_audio_number = self.__find_language_stream(
-                "audio", stream_objs, audio_name, audio_language
+            new_audio_number = find_language_stream(
+                "audio", media_streams, audio_name, audio_language
             )
-            new_subtitle_number = self.__find_language_stream(
-                "subtitle", stream_objs, subtitle_name, subtitle_language
+            new_subtitle_numbers = get_matching_stream_numbers(
+                "subtitle", all_subtitle_details, media_streams
             )
-            if new_audio_number == -1 or new_subtitle_number == -1:
+
+            if new_audio_number == -1:
                 self.log_to_console(
                     f"** could not find the language setting you are looking for {file.name}\n",
                     is_clear=False,
@@ -156,7 +158,7 @@ class FfmpegGui(Gui):
             command = self.__build_command(
                 file_path=file.path,
                 audio=new_audio_number,
-                subtitles=new_subtitle_number,
+                subtitles=new_subtitle_numbers,
                 attachment=None,
                 output_file_path=f"{out_path}/{file.name}",
             )
@@ -171,15 +173,17 @@ class FfmpegGui(Gui):
             self.__audio_dropdown_row,
             self.DEFAULT_OPTIONS,
         )
-        self.__default_audio, _ = create_dropdown(
+        audio, _ = create_dropdown(
             self.__root,
             self.__audio_list,
             self.__audio_dropdown_row,
             lambda x: self.log_to_console(f"selected {x}"),
         )
+        self.__default_audios = [audio]
 
     def __add_extra_subtitle_dropdown(self):
         if self.__num_subtitle_dropdowns == 3:
+            self.log_to_console("no more subtitles can be added")
             return
         self.__num_subtitle_dropdowns += 1
         default_subtitle, _ = create_dropdown(
