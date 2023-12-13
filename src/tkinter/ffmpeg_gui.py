@@ -7,8 +7,7 @@ from typing import Iterable
 from src.tkinter.gui import Gui
 from src.exceptions.exceptions import ServiceError
 from src.ffmpeg.ffmpeg_builder import FfmpegCommandBuilder
-from PIL import Image, ImageTk
-
+from src.data_types.DirectoryFile import DirectoryFile
 
 from logging import getLogger
 
@@ -58,36 +57,28 @@ class FfmpegGui(Gui):
         self.__root.geometry(dimension)
         self.__root.configure(bg=self.BACKGROUND_COLOR)
 
-    def __build_command(
-        self,
-        file_path: str,
-        audio: str,
-        subtitles: Iterable[str],
-        attachment: str,
-        output_file_path: str,
-    ) -> Iterable[str]:
-        builder = FfmpegCommandBuilder(file_path)
-        builder.add_stream(audio, StreamType.AUDIO)
-        for subtitle in set(subtitles):
-            builder.add_stream(subtitle, StreamType.SUBTITLE)
-        builder.set_default(audio, StreamType.AUDIO)
-        builder.set_default(subtitles[0], StreamType.SUBTITLE)
+    def __get_details_for_all_streams(self, language_streams: Iterable[Variable]):
+        """function to go iterate over language streams and extract details"""
+        all_language_stream_details = []
+        for stream in language_streams:
+            stream_number, stream_name, stream_language = get_language_widget_details(
+                stream
+            )
+            if not stream_name and not stream_language:
+                continue
+            all_language_stream_details.append(
+                (stream_number, stream_name, stream_language)
+            )
 
-        if attachment:
-            builder.add_stream(attachment, StreamType.ATTACHMENT)
-
-        command = builder.build(output_file_path)
-        self.log_to_console(builder.print_command(), is_clear=False)
-        return command
+        return all_language_stream_details
 
     def __set_default_streams(self):
         path = get_widget_value(self.__file_entry_text)
-        audio_number, _, _ = get_language_widget(self.__default_audios[0])
-        subtitle_details = self.__get_all_subtitle_details(self.__default_subtitles)
+        audio_number, _, _ = get_language_widget_details(self.__default_audios[0])
+        subtitle_details = self.__get_details_for_all_streams(self.__default_subtitles)
         subtitle_numbers = [
             subtitle_number for subtitle_number, _, _ in subtitle_details
         ]
-        # attachment, _ = get_widget_value(self.__default_attachment).split(": ")
         if not audio_number or not subtitle_numbers:
             self.log_to_console("no values selected for conversion!")
             return
@@ -97,43 +88,30 @@ class FfmpegGui(Gui):
         if not files:
             return
         file = files[0]
-        out_dir, _ = parse_path(file.path)
-        out_path = create_sub_directory(out_dir, "updated")
         self.log_to_console(f"building command for file {file.name}", is_clear=False)
-        self.__commands = [
-            self.__build_command(
-                file_path=file.path,
-                audio=audio_number,
-                subtitles=subtitle_numbers,
-                attachment=None,
-                output_file_path=f"{out_path}/{file.name}",
-            )
-        ]
-
-    def __get_all_subtitle_details(self, language_streams):
-        all_language_stream_details = []
-        for stream in language_streams:
-            stream_number, stream_name, stream_language = get_language_widget(stream)
-            if not stream_name and not stream_language:
-                continue
-            all_language_stream_details.append(
-                (stream_number, stream_name, stream_language)
-            )
-
-        return all_language_stream_details
+        command = build_command(
+            file_path=file.path,
+            audio=audio_number,
+            subtitles=subtitle_numbers,
+            attachment=None,
+        )
+        self.log_to_console(command, is_clear=False)
+        self.__commands = [command]
 
     def __set_bulk_default_streams(self):
         path = get_widget_value(self.__file_entry_text)
-        _, audio_name, audio_language = get_language_widget(self.__default_audios[0])
-        all_subtitle_details = self.__get_all_subtitle_details(self.__default_subtitles)
+        _, audio_name, audio_language = get_language_widget_details(
+            self.__default_audios[0]
+        )
+        all_subtitle_details = self.__get_details_for_all_streams(
+            self.__default_subtitles
+        )
 
         self.log_to_console("")
         files = get_files(path)
 
         if not files:
             return
-        out_dir, _ = parse_path(files[0].path)
-        out_path = create_sub_directory(out_dir, "updated")
         commands = []
         for file in files:
             self.log_to_console(
@@ -155,13 +133,14 @@ class FfmpegGui(Gui):
                     is_clear=False,
                 )
                 continue
-            command = self.__build_command(
+
+            command = build_command(
                 file_path=file.path,
                 audio=new_audio_number,
                 subtitles=new_subtitle_numbers,
                 attachment=None,
-                output_file_path=f"{out_path}/{file.name}",
             )
+            self.log_to_console(command, is_clear=False)
             commands.append(command)
 
         self.__commands = commands
@@ -239,26 +218,6 @@ class FfmpegGui(Gui):
             lambda x: self.log_to_console(f"selected {x}"),
         )
 
-    def create_options(self, options: Iterable[MediaStream]):
-        all_options = [self.BLANK]
-        if not options:
-            return all_options
-
-        if isinstance(options[0], AudioStream) or isinstance(
-            options[0], SubtitleStream
-        ):
-            language_options = [
-                f"{index}:{stream.title}:{stream.language}"
-                for index, stream in enumerate(options)
-            ]
-            all_options.extend(language_options)
-        elif isinstance(options[0], AttachmentStream):
-            extras_options = [
-                f"{index}: {stream.filename}" for index, stream in enumerate(options)
-            ]
-            all_options.extend(extras_options)
-        return all_options
-
     def __run_commands(self):
         is_okay = create_confirmation_window(
             "Confirmation", "Are you sure you want to run these commands?"
@@ -312,9 +271,9 @@ class FfmpegGui(Gui):
             return
 
         stream_objs = parse_streams(streams)
-        self.__subtitles_list = self.create_options(stream_objs.get("subtitle"))
-        self.__audio_list = self.create_options(stream_objs.get("audio"))
-        self.__attachments_list = self.create_options(stream_objs.get("attachment"))
+        self.__subtitles_list = create_options(stream_objs.get("subtitle"))
+        self.__audio_list = create_options(stream_objs.get("audio"))
+        self.__attachments_list = create_options(stream_objs.get("attachment"))
         self.log_to_console(stream_objs)
         self.__add_audio_component()
         self.__add_subtitle_component()
