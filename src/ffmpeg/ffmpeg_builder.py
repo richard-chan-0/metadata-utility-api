@@ -1,11 +1,15 @@
 from src.exceptions.exceptions import DataTypeError, FileSystemError
 from src.utilities.os_functions import is_file
 from src.data_types.media_types import StreamType
+from src.utilities.os_functions import parse_path, create_sub_directory
+from src.data_types.FfmpegCommand import FfmpegCommand
 
 
 class FfmpegCommandBuilder:
     def __init__(self, file_path, video_stream: int = 0):
         self.__command = ["ffmpeg"]
+        self.__input_dir, self.__file_path = parse_path(file_path)
+        self.__output_dir = None
         self.__add_file(file_path)
         self.__add_video(video_stream)
 
@@ -48,14 +52,19 @@ class FfmpegCommandBuilder:
 
         return self
 
-    def __set_output_file(self, output_file_path: str):
-        output_command = [f"{output_file_path}"]
-        self.__command.extend(output_command)
+    def set_output_file(self, output_file_path: str):
+        self.__output_dir = output_file_path
         return self
 
-    def print_command(self):
-        return " ".join(self.__command)
+    def build(self) -> FfmpegCommand:
+        output_file_path = (
+            self.__output_dir
+            if self.__output_dir
+            else create_sub_directory(self.__input_dir, "updated")
+        )
+        self.__command.extend([f"{output_file_path}"])
+        return FfmpegCommand(self.__command)
 
-    def build(self, output_file_path):
-        self.__set_output_file(output_file_path)
-        return self.__command
+    def build_with_output_path(self, output_file_path) -> FfmpegCommand:
+        self.__command.extend([f"{output_file_path}"])
+        return FfmpegCommand(self.__command)

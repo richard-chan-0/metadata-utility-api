@@ -18,7 +18,8 @@ def get_widget_value(widget: Variable):
     return "" if not widget else widget.get()
 
 
-def get_language_widget(widget):
+def get_language_widget_details(widget: Variable) -> Tuple[str, str, str]:
+    """function to get language details from string variable"""
     try:
         number, name, language = get_widget_value(widget).split(":")
         return number, name, language

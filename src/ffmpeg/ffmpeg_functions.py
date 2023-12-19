@@ -7,7 +7,9 @@ from src.factories.factories import (
 from typing import Iterable, Callable
 from json import loads
 from logging import getLogger
-from src.data_types.media_types import MediaStream
+from src.data_types.media_types import *
+from src.ffmpeg.ffmpeg_builder import FfmpegCommandBuilder
+from src.data_types.FfmpegCommand import FfmpegCommand
 
 logger = getLogger(__name__)
 
@@ -91,3 +93,41 @@ def find_language_stream(
         if find_title == title and find_language == language:
             return index
     return -1
+
+
+def create_options(options: Iterable[MediaStream]):
+    all_options = ["n/a"]
+    if not options:
+        return all_options
+
+    if isinstance(options[0], AudioStream) or isinstance(options[0], SubtitleStream):
+        language_options = [
+            f"{index}:{stream.title}:{stream.language}"
+            for index, stream in enumerate(options)
+        ]
+        all_options.extend(language_options)
+    elif isinstance(options[0], AttachmentStream):
+        extras_options = [
+            f"{index}: {stream.filename}" for index, stream in enumerate(options)
+        ]
+        all_options.extend(extras_options)
+    return all_options
+
+
+def build_command(
+    file_path: str,
+    audio: str,
+    subtitles: Iterable[str],
+    attachment: str,
+) -> FfmpegCommand:
+    builder = FfmpegCommandBuilder(file_path)
+    builder.add_stream(audio, StreamType.AUDIO)
+    for subtitle in set(subtitles):
+        builder.add_stream(subtitle, StreamType.SUBTITLE)
+    builder.set_default(audio, StreamType.AUDIO)
+    builder.set_default(subtitles[0], StreamType.SUBTITLE)
+
+    if attachment:
+        builder.add_stream(attachment, StreamType.ATTACHMENT)
+
+    return builder.build()
