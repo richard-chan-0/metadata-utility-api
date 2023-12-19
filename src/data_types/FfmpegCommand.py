@@ -12,3 +12,6 @@ class FfmpegCommand:
 
     def __str__(self):
         return " ".join(self.__command)
+
+    def get_command(self):
+        return self.__command

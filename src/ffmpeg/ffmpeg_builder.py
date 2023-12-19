@@ -8,7 +8,7 @@ from src.data_types.FfmpegCommand import FfmpegCommand
 class FfmpegCommandBuilder:
     def __init__(self, file_path, video_stream: int = 0):
         self.__command = ["ffmpeg"]
-        self.__input_dir, self.__file_path = parse_path(file_path)
+        self.__input_dir, self.__filename = parse_path(file_path)
         self.__output_dir = None
         self.__add_file(file_path)
         self.__add_video(video_stream)
@@ -62,7 +62,7 @@ class FfmpegCommandBuilder:
             if self.__output_dir
             else create_sub_directory(self.__input_dir, "updated")
         )
-        self.__command.extend([f"{output_file_path}"])
+        self.__command.extend([f"{output_file_path}/{self.__filename}"])
         return FfmpegCommand(self.__command)
 
     def build_with_output_path(self, output_file_path) -> FfmpegCommand:
