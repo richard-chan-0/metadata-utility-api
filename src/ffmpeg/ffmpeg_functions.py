@@ -116,15 +116,16 @@ def create_options(options: Iterable[MediaStream]):
 
 def build_command(
     file_path: str,
-    audio: str,
+    audios: str,
     subtitles: Iterable[str],
     attachment: str,
 ) -> FfmpegCommand:
     builder = FfmpegCommandBuilder(file_path)
-    builder.add_stream(audio, StreamType.AUDIO)
+    for audio in set(audios):
+        builder.add_stream(audio, StreamType.AUDIO)
     for subtitle in set(subtitles):
         builder.add_stream(subtitle, StreamType.SUBTITLE)
-    builder.set_default(audio, StreamType.AUDIO)
+    builder.set_default(audios[0], StreamType.AUDIO)
     builder.set_default(subtitles[0], StreamType.SUBTITLE)
 
     if attachment:

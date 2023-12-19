@@ -22,7 +22,8 @@ class FfmpegGui(Gui):
     def __init__(self, root: Tk):
         self.__root = root
         self.__root.title("FFMPEG Default Changer")
-        self.__add_button_image = None
+        self.__add_subtitle_button_image = None
+        self.__add_audio_button_image = None
 
         self.__file_entry_row = 0
         self.__inspect_file_button_row = 1
@@ -42,13 +43,21 @@ class FfmpegGui(Gui):
         self.__subtitle_frame = None
         self.__subtitles_list = []
         self.__num_subtitle_dropdowns = 0
+
+        self.__audio_frame = None
+        self.__num_audio_dropdowns = 0
         self.__audio_list = []
+
         self.__attachments_list = []
         self.__commands = []
 
-    def __setup_add_button_image(self):
+    def __setup_add_subtitle_button_image(self):
         my_img = create_photoimage("resources/add_button.jpg", (20, 20))
-        self.__add_button_image = my_img
+        self.__add_subtitle_button_image = my_img
+
+    def __setup_add_audio_button_image(self):
+        my_img = create_photoimage("resources/add_button.jpg", (20, 20))
+        self.__add_audio_button_image = my_img
 
     def __create_window(self):
         width = 900
@@ -74,12 +83,14 @@ class FfmpegGui(Gui):
 
     def __set_default_streams(self):
         path = get_widget_value(self.__file_entry_text)
-        audio_number, _, _ = get_language_widget_details(self.__default_audios[0])
+        audio_details = self.__get_details_for_all_streams(self.__default_audios)
         subtitle_details = self.__get_details_for_all_streams(self.__default_subtitles)
+        audio_numbers = [audio_number for audio_number, _, _ in audio_details]
+
         subtitle_numbers = [
             subtitle_number for subtitle_number, _, _ in subtitle_details
         ]
-        if not audio_number or not subtitle_numbers:
+        if not audio_numbers or not subtitle_numbers:
             self.log_to_console("no values selected for conversion!")
             return
 
@@ -91,7 +102,7 @@ class FfmpegGui(Gui):
         self.log_to_console(f"building command for file {file.name}", is_clear=False)
         command = build_command(
             file_path=file.path,
-            audio=audio_number,
+            audios=audio_numbers,
             subtitles=subtitle_numbers,
             attachment=None,
         )
@@ -100,9 +111,7 @@ class FfmpegGui(Gui):
 
     def __set_bulk_default_streams(self):
         path = get_widget_value(self.__file_entry_text)
-        _, audio_name, audio_language = get_language_widget_details(
-            self.__default_audios[0]
-        )
+        all_audio_details = self.__get_details_for_all_streams(self.__default_audios)
         all_subtitle_details = self.__get_details_for_all_streams(
             self.__default_subtitles
         )
@@ -120,14 +129,14 @@ class FfmpegGui(Gui):
             json_streams = get_media_streams(file.path)
             media_streams = parse_streams(json_streams)
 
-            new_audio_number = find_language_stream(
-                "audio", media_streams, audio_name, audio_language
+            new_audio_numbers = get_matching_stream_numbers(
+                "audio", all_audio_details, media_streams
             )
             new_subtitle_numbers = get_matching_stream_numbers(
                 "subtitle", all_subtitle_details, media_streams
             )
 
-            if new_audio_number == -1:
+            if not new_audio_numbers or not new_subtitle_numbers:
                 self.log_to_console(
                     f"** could not find the language setting you are looking for {file.name}\n",
                     is_clear=False,
@@ -136,7 +145,7 @@ class FfmpegGui(Gui):
 
             command = build_command(
                 file_path=file.path,
-                audio=new_audio_number,
+                audios=new_audio_numbers,
                 subtitles=new_subtitle_numbers,
                 attachment=None,
             )
@@ -145,20 +154,49 @@ class FfmpegGui(Gui):
 
         self.__commands = commands
 
+    def __add_extra_audio_dropdown(self):
+        if self.__num_audio_dropdowns == 3:
+            self.log_to_console("no more audios can be added")
+            return
+        self.__num_audio_dropdowns += 1
+        default_audio, _ = create_dropdown(
+            root=self.__audio_frame,
+            options=self.__audio_list,
+            row_position=self.__num_audio_dropdowns,
+            column=0,
+            command=lambda x: self.log_to_console(f"selected {x}"),
+        )
+        self.__default_audios.append(default_audio)
+
     def __add_audio_component(self):
+        self.__audio_frame = create_frame(
+            root=self.__root,
+            row=self.__audio_dropdown_row,
+            column=1,
+            options=self.DEFAULT_OPTIONS,
+        )
         create_label(
             self.__root,
             "Audio Streams",
             self.__audio_dropdown_row,
             self.DEFAULT_OPTIONS,
         )
-        audio, _ = create_dropdown(
-            self.__root,
-            self.__audio_list,
-            self.__audio_dropdown_row,
-            lambda x: self.log_to_console(f"selected {x}"),
+        default_audio, _ = create_dropdown(
+            root=self.__audio_frame,
+            options=self.__audio_list,
+            row_position=0,
+            column=0,
+            command=lambda x: self.log_to_console(f"selected {x}"),
         )
-        self.__default_audios = [audio]
+        self.__setup_add_audio_button_image()
+        create_image_buttoon(
+            self.__audio_frame,
+            self.__add_audio_button_image,
+            row_position=0,
+            col_position=1,
+            command=self.__add_extra_audio_dropdown,
+        )
+        self.__default_audios.append(default_audio)
 
     def __add_extra_subtitle_dropdown(self):
         if self.__num_subtitle_dropdowns == 3:
@@ -194,10 +232,10 @@ class FfmpegGui(Gui):
             column=0,
             command=lambda x: self.log_to_console(f"selected {x}"),
         )
-        self.__setup_add_button_image()
+        self.__setup_add_subtitle_button_image()
         create_image_buttoon(
             self.__subtitle_frame,
-            self.__add_button_image,
+            self.__add_subtitle_button_image,
             row_position=0,
             col_position=1,
             command=self.__add_extra_subtitle_dropdown,
@@ -228,7 +266,7 @@ class FfmpegGui(Gui):
             return
 
         for command in self.__commands:
-            run_shell_command(command)
+            run_shell_command(command.get_command())
 
         self.log_to_console("completed default reset")
 
