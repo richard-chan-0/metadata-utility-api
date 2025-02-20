@@ -11,11 +11,30 @@ from src.tkinter.functions.actions import (
     set_single_command,
 )
 from dataclasses import dataclass
+from src.tkinter.functions.actions import (
+    set_streams,
+    run_ffmpeg,
+    set_bulk_commands,
+    set_single_command,
+)
+from dataclasses import dataclass
 
 from logging import getLogger
 
 logger = getLogger(__name__)
 
+BLANK = "n/a"
+BACKGROUND_COLOR = "#141c15"
+DEFAULT_OPTIONS = {"bg": BACKGROUND_COLOR, "highlightbackground": BACKGROUND_COLOR}
+
+
+@dataclass
+class ButtonDetails:
+    button_text: str
+    action: Callable
+
+
+class FfmpegGui(Gui):
 BLANK = "n/a"
 BACKGROUND_COLOR = "#141c15"
 DEFAULT_OPTIONS = {"bg": BACKGROUND_COLOR, "highlightbackground": BACKGROUND_COLOR}
@@ -74,13 +93,23 @@ class FfmpegGui(Gui):
         height = 450
         dimension = f"{width}x{height}"
         self.__root.geometry(dimension)
-        self.__root.configure(bg=self.BACKGROUND_COLOR)
+        self.__root.configure(bg=BACKGROUND_COLOR)
 
     def __set_default_streams(self):
-        set_single_command(self)
+        self.__commands = set_single_command(
+            self.log_to_console,
+            self.__file_entry_text,
+            self.__default_audios,
+            self.__default_subtitles,
+        )
 
     def __set_bulk_default_streams(self):
-        set_bulk_commands(self)
+        self.__commands = set_bulk_commands(
+            self.__file_entry_text,
+            self.__default_audios,
+            self.__default_subtitles,
+            self.log_to_console,
+        )
 
     def __add_extra_audio_dropdown(self):
         if self.__num_audio_dropdowns == 3:
@@ -101,13 +130,13 @@ class FfmpegGui(Gui):
             root=self.__root,
             row=self.__audio_dropdown_row,
             column=1,
-            options=self.DEFAULT_OPTIONS,
+            options=DEFAULT_OPTIONS,
         )
         create_label(
             self.__root,
             "Audio Streams",
             self.__audio_dropdown_row,
-            self.DEFAULT_OPTIONS,
+            DEFAULT_OPTIONS,
         )
         default_audio, _ = create_dropdown(
             root=self.__audio_frame,
@@ -117,6 +146,8 @@ class FfmpegGui(Gui):
             command=lambda x: self.log_to_console(f"selected {x}"),
         )
         self.__setup_add_audio_button_image()
+
+        create_image_button(
 
         create_image_button(
             self.__audio_frame,
@@ -146,13 +177,13 @@ class FfmpegGui(Gui):
             root=self.__root,
             row=self.__subtitles_dropdown_row,
             column=1,
-            options=self.DEFAULT_OPTIONS,
+            options=DEFAULT_OPTIONS,
         )
         create_label(
             self.__root,
             "Subtitle Streams",
             self.__subtitles_dropdown_row,
-            self.DEFAULT_OPTIONS,
+            DEFAULT_OPTIONS,
         )
         default_subtitle, _ = create_dropdown(
             root=self.__subtitle_frame,
@@ -162,6 +193,7 @@ class FfmpegGui(Gui):
             command=lambda x: self.log_to_console(f"selected {x}"),
         )
         self.__setup_add_subtitle_button_image()
+        create_image_button(
         create_image_button(
             self.__subtitle_frame,
             self.__add_subtitle_button_image,
@@ -176,7 +208,7 @@ class FfmpegGui(Gui):
             self.__root,
             "Attachments",
             self.__attachment_dropdown_row,
-            self.DEFAULT_OPTIONS,
+            DEFAULT_OPTIONS,
         )
         self.__default_attachment, _ = create_dropdown(
             self.__root,
@@ -186,11 +218,11 @@ class FfmpegGui(Gui):
         )
 
     def __run_commands(self):
-        run_ffmpeg(self)
+        run_ffmpeg(self.__commands, self.log_to_console)
 
     def __create_buttons_component(self):
         frame = create_frame(
-            self.__root, self.__buttons_component_row, 1, self.DEFAULT_OPTIONS
+            self.__root, self.__buttons_component_row, 1, DEFAULT_OPTIONS
         )
 
         button_details = [
@@ -206,12 +238,16 @@ class FfmpegGui(Gui):
                 action=button.action,
                 row_position=0,
                 col_position=col,
-                options=self.DEFAULT_OPTIONS,
+                options=DEFAULT_OPTIONS,
             )
 
     def inspect_files(self):
         """function to inspect files and save streams"""
-        set_streams(self)
+        streams = set_streams(self.__file_entry_text, self.log_to_console)
+        self.__subtitles_list = streams.get("subtitles")
+        self.__audio_list = streams.get("audio")
+        self.__attachments_list = streams.get("attachments")
+
         self.__add_audio_component()
         self.__add_subtitle_component()
         # self.__add_attachments_component()
@@ -225,11 +261,12 @@ class FfmpegGui(Gui):
             self.__root,
             "Enter a File/Directory",
             self.__file_entry_row,
-            self.DEFAULT_OPTIONS,
+            DEFAULT_OPTIONS,
         )
         self.__file_entry_text, _ = create_input_field(
             self.__root, self.__file_entry_row
         )
+        create_button(
         create_button(
             self.__root,
             "Inspect File(s)",
@@ -254,7 +291,7 @@ class FfmpegGui(Gui):
             self.__root,
             text="Console",
             row=self.__service_message_row,
-            options=self.DEFAULT_OPTIONS,
+            options=DEFAULT_OPTIONS,
         )
 
         options = {

@@ -14,33 +14,39 @@ from src.tkinter.tkinter_functions import (
 from src.utilities.os_functions import run_shell_command, get_files
 
 
-def set_streams(self):
-    path = get_widget_value(self.__file_entry_text)
+def set_streams(file_entry_text, log_to_console):
+    path = get_widget_value(file_entry_text)
     try:
         streams = get_media_streams(path)
     except ServiceError as se:
-        self.log_to_console(se)
+        log_to_console(se)
         return
 
     stream_objs = parse_streams(streams)
-    self.__subtitles_list = create_options(stream_objs.get("subtitle"))
-    self.__audio_list = create_options(stream_objs.get("audio"))
-    self.__attachments_list = create_options(stream_objs.get("attachment"))
+    subtitles_list = create_options(stream_objs.get("subtitle"))
+    audio_list = create_options(stream_objs.get("audio"))
+    attachments_list = create_options(stream_objs.get("attachment"))
+
+    return {
+        "subtitles": subtitles_list,
+        "audio": audio_list,
+        "attachments": attachments_list,
+    }
 
 
-def run_ffmpeg(self):
+def run_ffmpeg(commands, log_to_console):
     is_okay = create_confirmation_window(
         "Confirmation", "Are you sure you want to run these commands?"
     )
 
     if not is_okay:
-        self.log_to_console("ffmpeg aborted!")
+        log_to_console("ffmpeg aborted!")
         return
 
-    for command in self.__commands:
+    for command in commands:
         run_shell_command(command.get_command())
 
-    self.log_to_console("completed default reset")
+    log_to_console("completed default reset")
 
 
 def get_details_for_all_streams(language_streams):
@@ -59,53 +65,61 @@ def get_details_for_all_streams(language_streams):
     return all_language_stream_details
 
 
-def set_bulk_commands(self):
-    path = get_widget_value(self.__file_entry_text)
-    all_audio_details = get_details_for_all_streams(self.__default_audios)
-    all_subtitle_details = get_details_for_all_streams(self.__default_subtitles)
+def set_bulk_commands(
+    file_entry_text, default_audios, default_subtitles, log_to_console
+):
+    path = get_widget_value(file_entry_text)
+    all_audio_details = get_details_for_all_streams(default_audios)
+    all_subtitle_details = get_details_for_all_streams(default_subtitles)
 
-    self.log_to_console("")
+    log_to_console("")
     files = get_files(path)
 
     if not files:
         return
 
     commands = [
-        parse_file_to_command(self, all_audio_details, all_subtitle_details, file)
+        parse_file_to_command(
+            log_to_console, all_audio_details, all_subtitle_details, file
+        )
         for file in files
     ]
-    self.__commands = [command for command in commands if command]
+    return [command for command in commands if command]
 
 
-def set_single_command(self):
-    path = get_widget_value(self.__file_entry_text)
-    audio_details = get_details_for_all_streams(self.__default_audios)
-    subtitle_details = get_details_for_all_streams(self.__default_subtitles)
+def set_single_command(
+    log_to_console, file_entry_text, default_audios, default_subtitles
+):
+    path = get_widget_value(file_entry_text)
+    audio_details = get_details_for_all_streams(default_audios)
+    subtitle_details = get_details_for_all_streams(default_subtitles)
     audio_numbers = [audio_number for audio_number, _, _ in audio_details]
 
     subtitle_numbers = [subtitle_number for subtitle_number, _, _ in subtitle_details]
     if not audio_numbers or not subtitle_numbers:
-        self.log_to_console("no values selected for conversion!")
+        log_to_console("no values selected for conversion!")
         return
 
-    self.log_to_console("")
+    log_to_console("")
     files = get_files(path)
     if not files:
         return
     file = files[0]
-    self.log_to_console(f"building command for file {file.name}", is_clear=False)
+    log_to_console(f"building command for file {file.name}", is_clear=False)
     command = build_command(
         file_path=file.path,
         audios=audio_numbers,
         subtitles=subtitle_numbers,
         attachment=None,
     )
-    self.log_to_console(command, is_clear=False)
-    self.__commands = [command]
+    log_to_console(command, is_clear=False)
+    return [command]
 
 
-def parse_file_to_command(self, all_audio_details, all_subtitle_details, file):
-    self.log_to_console(f"building command for file {file.name}", is_clear=False)
+def parse_file_to_command(
+    log_to_console, all_audio_details, all_subtitle_details, file
+):
+    log_to_console(f"building command for file {file.name}", is_clear=False)
     json_streams = get_media_streams(file.path)
     media_streams = parse_streams(json_streams)
 
@@ -117,7 +131,7 @@ def parse_file_to_command(self, all_audio_details, all_subtitle_details, file):
     )
 
     if not new_audio_numbers or not new_subtitle_numbers:
-        self.log_to_console(
+        log_to_console(
             f"** could not find the language setting you are looking for {file.name}\n",
             is_clear=False,
         )
@@ -129,5 +143,5 @@ def parse_file_to_command(self, all_audio_details, all_subtitle_details, file):
         subtitles=new_subtitle_numbers,
         attachment=None,
     )
-    self.log_to_console(command, is_clear=False)
+    log_to_console(command, is_clear=False)
     return command
