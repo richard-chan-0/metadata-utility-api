@@ -35,18 +35,6 @@ class ButtonDetails:
 
 
 class FfmpegGui(Gui):
-BLANK = "n/a"
-BACKGROUND_COLOR = "#141c15"
-DEFAULT_OPTIONS = {"bg": BACKGROUND_COLOR, "highlightbackground": BACKGROUND_COLOR}
-
-
-@dataclass
-class ButtonDetails:
-    button_text: str
-    action: Callable
-
-
-class FfmpegGui(Gui):
 
     def __init__(self, root: Tk):
         self.__root = root
@@ -148,8 +136,6 @@ class FfmpegGui(Gui):
         self.__setup_add_audio_button_image()
 
         create_image_button(
-
-        create_image_button(
             self.__audio_frame,
             self.__add_audio_button_image,
             row_position=0,
@@ -193,7 +179,6 @@ class FfmpegGui(Gui):
             command=lambda x: self.log_to_console(f"selected {x}"),
         )
         self.__setup_add_subtitle_button_image()
-        create_image_button(
         create_image_button(
             self.__subtitle_frame,
             self.__add_subtitle_button_image,
@@ -266,7 +251,7 @@ class FfmpegGui(Gui):
         self.__file_entry_text, _ = create_input_field(
             self.__root, self.__file_entry_row
         )
-        create_button(
+
         create_button(
             self.__root,
             "Inspect File(s)",
