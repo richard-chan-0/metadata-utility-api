@@ -45,7 +45,8 @@ def get_media_streams(path: str) -> Iterable[dict]:
     shell_output = run_shell_command(
         ["ffprobe", "-hide_banner", "-show_streams", "-print_format", "json", file_path]
     )
-    return loads(shell_output.stdout)["streams"]
+    output = loads(shell_output.stdout)
+    return output["streams"]
 
 
 def parse_streams(streams: Iterable[dict]) -> dict[Iterable[MediaStream]]:

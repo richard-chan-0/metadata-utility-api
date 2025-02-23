@@ -48,7 +48,7 @@ def create_dropdown(
     return (dropdown_option, dropdown_menu)
 
 
-def create_buttoon(
+def create_button(
     root: Tk,
     button_text: str,
     action: Callable,
@@ -64,7 +64,7 @@ def create_buttoon(
     return button
 
 
-def create_image_buttoon(root: Tk, button_image, row_position, col_position, command):
+def create_image_button(root: Tk, button_image, row_position, col_position, command):
     """function to create a tkinter button with image"""
     button = Button(root, image=button_image, command=command)
     button.grid(row=row_position, column=col_position, sticky=W)
