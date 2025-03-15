@@ -13,6 +13,7 @@ from src.data_types.FfmpegCommand import FfmpegCommand
 
 logger = getLogger(__name__)
 
+# TODO: figure out what attachments are used for
 media_types = {
     "subtitle": create_subtitle_stream,
     "audio": create_audio_stream,
@@ -51,7 +52,7 @@ def get_media_streams(path: str) -> Iterable[dict]:
 
 def parse_streams(streams: Iterable[dict]) -> dict[Iterable[MediaStream]]:
     """function to create object for streams"""
-    print(streams)
+    logger.info(streams)
     media_streams = {}
     for stream_metadata in streams:
         media_type = stream_metadata["codec_type"]
