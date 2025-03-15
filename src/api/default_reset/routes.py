@@ -12,10 +12,10 @@ def default_reset_home():
     return "default reset endpoint"
 
 
-@default_reset.route("/streams", methods=["GET"])
+@default_reset.route("/streams", methods=["POST"])
 def read_streams():
     data = request.form
-    path = data["inspect path"]
+    path = data["path"]
     raw_streams = get_media_streams(path)
     response = parse_streams(raw_streams)
     return jsonify(response)
