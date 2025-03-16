@@ -118,7 +118,7 @@ def create_options(options: Iterable[MediaStream]):
 
 def build_command(
     file_path: str,
-    audios: str,
+    audios: Iterable[str],
     subtitles: Iterable[str],
     attachment: str,
 ) -> FfmpegCommand:
