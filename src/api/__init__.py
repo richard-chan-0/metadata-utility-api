@@ -2,13 +2,14 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 import logging
 from src.api.default_reset.routes import default_reset
+from src.lib.exceptions.exceptions import ServiceError
 
 logger = logging.getLogger(__name__)
 
 
 def register_errors(app):
 
-    @app.errorhandler(400)
+    @app.errorhandler(ServiceError)
     def handle_service_error(e):
         return jsonify({"error": str(e)}), 400
 

@@ -46,6 +46,5 @@ def write_bulk_streams():
             subtitles=subtitle_numbers,
             attachment=None,
         )
-        run_shell_command(command.get_command())
-        break
+        run_shell_command(command)
     return jsonify("successfully reset default audios for files in path")
