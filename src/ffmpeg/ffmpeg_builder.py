@@ -1,8 +1,8 @@
-from src.exceptions.exceptions import DataTypeError, FileSystemError
-from src.utilities.os_functions import is_file
-from src.data_types.media_types import StreamType
-from src.utilities.os_functions import parse_path, create_sub_directory
-from src.data_types.FfmpegCommand import FfmpegCommand
+from src.lib.exceptions.exceptions import DataTypeError, FileSystemError
+from src.lib.utilities.os_functions import is_file
+from src.lib.data_types.media_types import StreamType
+from src.lib.utilities.os_functions import parse_path, create_sub_directory
+from src.lib.data_types.FfmpegCommand import FfmpegCommand
 
 
 class FfmpegCommandBuilder:
@@ -47,7 +47,7 @@ class FfmpegCommandBuilder:
 
     def set_default(self, stream_number: int, stream_type: StreamType):
         stream = self.__create_stream(stream_number, stream_type)
-        default_command = [f"-disposition:{stream}", "default"]
+        default_command = [f"-disposition:{stream}", "forced"]
         self.__command.extend(default_command)
 
         return self

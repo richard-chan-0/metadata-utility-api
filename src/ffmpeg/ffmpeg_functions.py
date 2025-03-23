@@ -1,5 +1,8 @@
-from src.utilities.os_functions import run_shell_command, is_dir, get_files
-from src.factories.factories import (
+from src.lib.utilities.os_functions import run_shell_command, is_dir, get_files
+from src.lib.data_types.media_types import *
+from src.ffmpeg.ffmpeg_builder import FfmpegCommandBuilder
+from src.lib.data_types.FfmpegCommand import FfmpegCommand
+from src.lib.factories.factories import (
     create_audio_stream,
     create_subtitle_stream,
     create_attachment_stream,
@@ -7,12 +10,10 @@ from src.factories.factories import (
 from typing import Iterable, Callable
 from json import loads
 from logging import getLogger
-from src.data_types.media_types import *
-from src.ffmpeg.ffmpeg_builder import FfmpegCommandBuilder
-from src.data_types.FfmpegCommand import FfmpegCommand
 
 logger = getLogger(__name__)
 
+# TODO: figure out what attachments are used for
 media_types = {
     "subtitle": create_subtitle_stream,
     "audio": create_audio_stream,
@@ -42,16 +43,16 @@ def get_first_file_path(path: str) -> str:
 def get_media_streams(path: str) -> Iterable[dict]:
     """function to run ffprobe to get audio, video, subtitle information as json"""
     file_path = get_first_file_path(path)
-    shell_output = run_shell_command(
+    probe = FfmpegCommand(
         ["ffprobe", "-hide_banner", "-show_streams", "-print_format", "json", file_path]
     )
-    output = loads(shell_output.stdout)
+    shell_output = run_shell_command(probe)
+    output = loads(shell_output)
     return output["streams"]
 
 
 def parse_streams(streams: Iterable[dict]) -> dict[Iterable[MediaStream]]:
     """function to create object for streams"""
-    print(streams)
     media_streams = {}
     for stream_metadata in streams:
         media_type = stream_metadata["codec_type"]
@@ -117,7 +118,7 @@ def create_options(options: Iterable[MediaStream]):
 
 def build_command(
     file_path: str,
-    audios: str,
+    audios: Iterable[str],
     subtitles: Iterable[str],
     attachment: str,
 ) -> FfmpegCommand:

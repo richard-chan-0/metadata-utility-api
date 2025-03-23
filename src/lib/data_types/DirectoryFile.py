@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from re import findall, sub
 from typing import Iterable
-from src.exceptions.exceptions import DataTypeError
+from src.lib.exceptions.exceptions import DataTypeError
 
 
 @dataclass

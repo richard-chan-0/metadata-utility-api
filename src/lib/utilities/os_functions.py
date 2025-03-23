@@ -1,11 +1,12 @@
 import os
-from subprocess import run, PIPE
+from subprocess import run, DEVNULL
 
 from typing import Iterable, Callable
 
-from src.exceptions.exceptions import FileSystemError
-from src.factories.factories import create_file
-from src.data_types.DirectoryFile import DirectoryFile
+from src.lib.exceptions.exceptions import FileSystemError
+from src.lib.factories.factories import create_file
+from src.lib.data_types.DirectoryFile import DirectoryFile
+from src.lib.data_types.FfmpegCommand import FfmpegCommand
 import logging
 
 
@@ -156,9 +157,14 @@ def create_new_file_path(new_dir: str, file_name: str) -> str:
     return f"{new_dir}/{file_name}"
 
 
-def run_shell_command(command: Iterable[str]):
+def run_shell_command(command: FfmpegCommand):
     """runs a shell command given a list of arguments"""
-    return run(command, stdout=PIPE, encoding="utf-8")
+    logger.info(f"running command: {command}")
+    result = run(command.get_command(), capture_output=True, text=True)
+    logger.info("command completed")
+    if result.returncode != 0:
+        raise FileSystemError(f"error running command: {result.stderr}")
+    return result.stdout
 
 
 def is_dir(path: str):
