@@ -1,0 +1,183 @@
++ EBML head
+|+ EBML version: 1
+|+ EBML read version: 1
+|+ Maximum EBML ID length: 4
+|+ Maximum EBML size length: 8
+|+ Document type: matroska
+|+ Document type version: 4
+|+ Document type read version: 2
++ Segment: size 5711117455
+|+ Seek head (subentries will be skipped)
+|+ EBML void: size 4010
+|+ Segment information
+| + Timestamp scale: 1000000
+| + Multiplexing application: libebml v1.3.10 + libmatroska v1.5.2
+| + Writing application: mkvmerge v43.0.0 (\'The Quartermaster\') 64-bit
+| + Duration: 01:50:07.531000000
+| + Date: 2020-03-14 14:25:45 UTC
+| + Title: [Anime Land] Ne Zha (2019) (Dual Audio) (UHD BDRip 1080p HEVC HDR10 DTS+AC3) CHINESE [Encode By Omar]
+| + Segment UID: 0x95 0x42 0x39 0x51 0x74 0xac 0x11 0x28 0xf3 0xdd 0x7a 0xa2 0xfc 0xf3 0xe0 0xad
+|+ Tracks
+| + Track
+|  + Track number: 1 (track ID for mkvmerge & mkvextract: 0)
+|  + Track UID: 4183985536681513377
+|  + Track type: video
+|  + "Lacing" flag: 0
+|  + Codec ID: V_MPEGH/ISO/HEVC
+|  + Language: chi
+|  + Name: X265 HDR10 1080p By Omar
+|  + Video track
+|   + Pixel width: 1920
+|   + Pixel height: 804
+|   + Display width: 1920
+|   + Display height: 804
+|  + Codec\'s private data: size 2585 (HEVC profile: Main 10 @L5.1)
+|  + Default duration: 00:00:00.041666666 (24.000 frames/fields per second for a video track)
+| + Track
+|  + Track number: 2 (track ID for mkvmerge & mkvextract: 1)
+|  + Track UID: 16401860361675009033
+|  + Track type: audio
+|  + Codec ID: A_DTS
+|  + Default duration: 00:00:00.010666667 (93.750 frames/fields per second for a video track)
+|  + Language: chi
+|  + Name: DTS Core 1509 Kbps 5.1 (Untouched)
+|  + Audio track
+|   + Sampling frequency: 48000
+|   + Channels: 6
+|   + Bit depth: 24
+| + Track
+|  + Track number: 3 (track ID for mkvmerge & mkvextract: 2)
+|  + Track UID: 15765689701283726334
+|  + Track type: audio
+|  + "Default track" flag: 0
+|  + Codec ID: A_AC3
+|  + Default duration: 00:00:00.032000000 (31.250 frames/fields per second for a video track)
+|  + Name: AC3 640 Kbps 5.1 (Untouched)
+|  + Audio track
+|   + Sampling frequency: 48000
+|   + Channels: 6
+| + Track
+|  + Track number: 4 (track ID for mkvmerge & mkvextract: 3)
+|  + Track UID: 8914052138294457774
+|  + Track type: subtitles
+|  + "Lacing" flag: 0
+|  + Codec ID: S_HDMV/PGS
+|  + Name: ENGLISH-PGS Sub 1 (Untouched)
+|  + Content encodings
+|   + Content encoding
+|    + Content compression
+| + Track
+|  + Track number: 5 (track ID for mkvmerge & mkvextract: 4)
+|  + Track UID: 1003670492226781210
+|  + Track type: subtitles
+|  + "Default track" flag: 0
+|  + "Lacing" flag: 0
+|  + Codec ID: S_HDMV/PGS
+|  + Name: ENGLISH-PGS Sub 2 (Untouched)
+|  + Content encodings
+|   + Content encoding
+|    + Content compression
+|+ EBML void: size 1021
+|+ Chapters
+| + Edition entry
+|  + Edition flag hidden: 0
+|  + Edition flag default: 0
+|  + Edition UID: 9858178280641433666
+|  + Chapter atom
+|   + Chapter UID: 5537549697163823990
+|   + Chapter time start: 00:00:00.000000000
+|   + Chapter flag hidden: 0
+|   + Chapter flag enabled: 1
+|   + Chapter display
+|    + Chapter string: Chapter 01
+|    + Chapter language: chi
+|  + Chapter atom
+|   + Chapter UID: 10006198781852283637
+|   + Chapter time start: 00:05:56.458000000
+|   + Chapter flag hidden: 0
+|   + Chapter flag enabled: 1
+|   + Chapter display
+|    + Chapter string: Chapter 02
+|    + Chapter language: chi
+|  + Chapter atom
+|   + Chapter UID: 1191873810610991344
+|   + Chapter time start: 00:15:39.958000000
+|   + Chapter flag hidden: 0
+|   + Chapter flag enabled: 1
+|   + Chapter display
+|    + Chapter string: Chapter 03
+|    + Chapter language: chi
+|  + Chapter atom
+|   + Chapter UID: 9493908245578536779
+|   + Chapter time start: 00:25:46.125000000
+|   + Chapter flag hidden: 0
+|   + Chapter flag enabled: 1
+|   + Chapter display
+|    + Chapter string: Chapter 04
+|    + Chapter language: chi
+|  + Chapter atom
+|   + Chapter UID: 15523218121802388457
+|   + Chapter time start: 00:35:42.875000000
+|   + Chapter flag hidden: 0
+|   + Chapter flag enabled: 1
+|   + Chapter display
+|    + Chapter string: Chapter 05
+|    + Chapter language: chi
+|  + Chapter atom
+|   + Chapter UID: 12946098635417152397
+|   + Chapter time start: 00:41:50.208000000
+|   + Chapter flag hidden: 0
+|   + Chapter flag enabled: 1
+|   + Chapter display
+|    + Chapter string: Chapter 06
+|    + Chapter language: chi
+|  + Chapter atom
+|   + Chapter UID: 4965550904361071856
+|   + Chapter time start: 00:52:11.833000000
+|   + Chapter flag hidden: 0
+|   + Chapter flag enabled: 1
+|   + Chapter display
+|    + Chapter string: Chapter 07
+|    + Chapter language: chi
+|  + Chapter atom
+|   + Chapter UID: 12687783158374746374
+|   + Chapter time start: 01:00:58.917000000
+|   + Chapter flag hidden: 0
+|   + Chapter flag enabled: 1
+|   + Chapter display
+|    + Chapter string: Chapter 08
+|    + Chapter language: chi
+|  + Chapter atom
+|   + Chapter UID: 4095355229096093892
+|   + Chapter time start: 01:08:17.250000000
+|   + Chapter flag hidden: 0
+|   + Chapter flag enabled: 1
+|   + Chapter display
+|    + Chapter string: Chapter 09
+|    + Chapter language: chi
+|  + Chapter atom
+|   + Chapter UID: 6217353785429434489
+|   + Chapter time start: 01:16:35.167000000
+|   + Chapter flag hidden: 0
+|   + Chapter flag enabled: 1
+|   + Chapter display
+|    + Chapter string: Chapter 10
+|    + Chapter language: chi
+|  + Chapter atom
+|   + Chapter UID: 1338027785144072028
+|   + Chapter time start: 01:24:05.667000000
+|   + Chapter flag hidden: 0
+|   + Chapter flag enabled: 1
+|   + Chapter display
+|    + Chapter string: Chapter 11
+|    + Chapter language: chi
+|  + Chapter atom
+|   + Chapter UID: 12925316426035186309
+|   + Chapter time start: 01:43:22.500000000
+|   + Chapter flag hidden: 0
+|   + Chapter flag enabled: 1
+|   + Chapter display
+|    + Chapter string: Chapter 12
+|    + Chapter language: chi
+|+ EBML void: size 101
+|+ Cluster

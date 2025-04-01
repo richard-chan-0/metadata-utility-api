@@ -1,8 +1,8 @@
-from src.lib.exceptions.exceptions import DataTypeError, FileSystemError
+from src.lib.exceptions.exceptions import FileSystemError
 from src.lib.utilities.os_functions import is_file
 from src.lib.data_types.media_types import StreamType
 from src.lib.utilities.os_functions import parse_path, create_sub_directory
-from src.lib.data_types.FfmpegCommand import FfmpegCommand
+from src.lib.data_types.Command import Command
 
 
 class FfmpegCommandBuilder:
@@ -56,15 +56,15 @@ class FfmpegCommandBuilder:
         self.__output_dir = output_file_path
         return self
 
-    def build(self) -> FfmpegCommand:
+    def build(self) -> Command:
         output_file_path = (
             self.__output_dir
             if self.__output_dir
             else create_sub_directory(self.__input_dir, "updated")
         )
         self.__command.extend([f"{output_file_path}/{self.__filename}"])
-        return FfmpegCommand(self.__command)
+        return Command(self.__command)
 
-    def build_with_output_path(self, output_file_path) -> FfmpegCommand:
+    def build_with_output_path(self, output_file_path) -> Command:
         self.__command.extend([f"{output_file_path}"])
-        return FfmpegCommand(self.__command)
+        return Command(self.__command)

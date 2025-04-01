@@ -6,7 +6,7 @@ from typing import Iterable, Callable
 from src.lib.exceptions.exceptions import FileSystemError
 from src.lib.factories.factories import create_file
 from src.lib.data_types.DirectoryFile import DirectoryFile
-from src.lib.data_types.FfmpegCommand import FfmpegCommand
+from src.lib.data_types.Command import Command
 import logging
 
 
@@ -157,7 +157,7 @@ def create_new_file_path(new_dir: str, file_name: str) -> str:
     return f"{new_dir}/{file_name}"
 
 
-def run_shell_command(command: FfmpegCommand):
+def run_shell_command(command: Command):
     """runs a shell command given a list of arguments"""
     logger.info(f"running command: {command}")
     result = run(command.get_command(), capture_output=True, text=True)
@@ -186,3 +186,14 @@ def parse_path(path: str):
     if not os.path.exists(path):
         raise FileExistsError("path does not exist")
     return os.path.split(path)
+
+
+def get_first_file_path(path: str) -> str:
+    is_dir_path = is_dir(path)
+    if not is_dir_path:
+        return path
+
+    files = get_files(path)
+    if not files:
+        raise FileExistsError("directory is empty")
+    return files[0].path

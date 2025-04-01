@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from re import findall, sub
 from typing import Iterable
-from src.lib.exceptions.exceptions import DataTypeError
+from src.lib.exceptions.exceptions import FileSystemError
 
 
 @dataclass
@@ -15,7 +15,7 @@ class DirectoryFile:
         """function to get the first instance of a number"""
         matches = findall("\d+", text)
         if not matches:
-            raise DataTypeError("no numbers found in file name")
+            raise FileSystemError("no numbers found in file name")
         return matches[0]
 
     def __get_season_episode_matches(self) -> str:
