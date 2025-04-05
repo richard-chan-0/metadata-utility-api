@@ -163,7 +163,9 @@ def run_shell_command(command: Command):
     result = run(command.get_command(), capture_output=True, text=True)
     logger.info("command completed")
     if result.returncode != 0:
-        raise FileSystemError(f"error running command: {result.stderr}")
+        raise FileSystemError(
+            f"error running command...\nstderr: {result.stderr}\nstdout: {result.stdout}"
+        )
     return result.stdout
 
 
@@ -186,6 +188,11 @@ def parse_path(path: str):
     if not os.path.exists(path):
         raise FileExistsError("path does not exist")
     return os.path.split(path)
+
+
+def is_mkv(path):
+    _, file_name = parse_path(path)
+    return "mkv" in file_name
 
 
 def get_first_file_path(path: str) -> str:

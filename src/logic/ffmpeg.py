@@ -31,9 +31,8 @@ def get_media_stream_creator(media_type: str) -> Callable:
 
 def get_media_streams(path: str) -> Iterable[dict]:
     """function to run ffprobe to get audio, video, subtitle information as json"""
-    file_path = get_first_file_path(path)
     probe = Command(
-        ["ffprobe", "-hide_banner", "-show_streams", "-print_format", "json", file_path]
+        ["ffprobe", "-hide_banner", "-show_streams", "-print_format", "json", path]
     )
     shell_output = run_shell_command(probe)
     output = loads(shell_output)
