@@ -1,7 +1,7 @@
 from typing import Iterable
 
 
-class FfmpegCommand:
+class Command:
     __command: Iterable[str] = []
 
     def __init__(self):

@@ -1,5 +1,5 @@
-from src.ffmpeg.ffmpeg_builder import FfmpegCommandBuilder
-from src.data_types.media_types import StreamType
+from src.logic.ffmpeg_builder import FfmpegCommandBuilder
+from src.lib.data_types.media_types import StreamType
 from unittest.mock import patch
 
 

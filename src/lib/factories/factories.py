@@ -3,6 +3,7 @@ from src.lib.data_types.DirectoryFile import DirectoryFile
 from src.lib.data_types.ServiceArguments import ServiceArguments
 from src.lib.data_types.media_types import AudioStream, SubtitleStream, AttachmentStream
 from src.lib.utilities.app_functions import read_dict
+from re import match
 
 
 def create_file(dir_entry: DirEntry):
@@ -40,6 +41,34 @@ def create_subtitle_stream(stream: dict):
         language=language,
         is_default=is_default,
         title=title,
+    )
+
+
+def get_language(track: dict):
+    for key in ["Language", "Language (IETF BCP 47)"]:
+        if key in track:
+            return track[key]
+
+    return "no language"
+
+
+def create_mkv_subtitle_stream(track: dict, subtitle_number: int):
+    language = get_language(track)
+    return SubtitleStream(
+        stream_number=subtitle_number,
+        language=language,
+        is_default=track["is_default"] == "1" if "is_default" in track else False,
+        title=track["Name"] if "Name" in track else "",
+    )
+
+
+def create_mkv_audio_stream(track: dict, audio_number: int):
+    language = get_language(track)
+    return AudioStream(
+        stream_number=audio_number,
+        language=language,
+        is_default=track["is_default"] == "1" if "is_default" in track else False,
+        title=track["Name"] if "Name" in track else "",
     )
 
 

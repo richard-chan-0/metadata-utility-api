@@ -1,7 +1,7 @@
-from src.lib.utilities.os_functions import run_shell_command, is_dir, get_files
+from src.lib.utilities.os_functions import run_shell_command, get_first_file_path
 from src.lib.data_types.media_types import *
-from src.ffmpeg.ffmpeg_builder import FfmpegCommandBuilder
-from src.lib.data_types.FfmpegCommand import FfmpegCommand
+from src.logic.ffmpeg_builder import FfmpegCommandBuilder
+from src.lib.data_types.Command import Command
 from src.lib.factories.factories import (
     create_audio_stream,
     create_subtitle_stream,
@@ -29,22 +29,10 @@ def get_media_stream_creator(media_type: str) -> Callable:
     return media_types[media_type]
 
 
-def get_first_file_path(path: str) -> str:
-    is_dir_path = is_dir(path)
-    if not is_dir_path:
-        return path
-
-    files = get_files(path)
-    if not files:
-        raise FileExistsError("directory is empty")
-    return files[0].path
-
-
 def get_media_streams(path: str) -> Iterable[dict]:
     """function to run ffprobe to get audio, video, subtitle information as json"""
-    file_path = get_first_file_path(path)
-    probe = FfmpegCommand(
-        ["ffprobe", "-hide_banner", "-show_streams", "-print_format", "json", file_path]
+    probe = Command(
+        ["ffprobe", "-hide_banner", "-show_streams", "-print_format", "json", path]
     )
     shell_output = run_shell_command(probe)
     output = loads(shell_output)
@@ -121,7 +109,7 @@ def build_command(
     audios: Iterable[str],
     subtitles: Iterable[str],
     attachment: str,
-) -> FfmpegCommand:
+) -> Command:
     builder = FfmpegCommandBuilder(file_path)
     for audio in set(audios):
         builder.add_stream(audio, StreamType.AUDIO)
