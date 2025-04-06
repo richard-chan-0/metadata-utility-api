@@ -45,7 +45,7 @@ def create_app():
     def read_streams():
         path = getenv("MKV_DIRECTORY")
         if not path:
-            return jsonify("no path set"), 500
+            raise ServiceError("environment variable not set")
         file_path = get_first_file_path(path)
         if is_mkv(file_path):
             response = get_mkv_media_streams(file_path)
