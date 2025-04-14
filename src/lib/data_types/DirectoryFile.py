@@ -13,13 +13,13 @@ class DirectoryFile:
 
     def __get_first_number(self, text: str) -> str:
         """function to get the first instance of a number"""
-        matches = findall("\d+", text)
+        matches = findall(r"\d+", text)
         if not matches:
             raise FileSystemError("no numbers found in file name")
         return matches[0]
 
     def __get_season_episode_matches(self) -> str:
-        return findall("S\d\dE\d+", self.name)[0]
+        return findall(r"S\d\dE\d+", self.name)[0]
 
     def __get_episode_matches(self) -> str:
         clean_resolution_text = sub("(720|1080|360|1920|1440)", "?", self.name)
