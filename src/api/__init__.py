@@ -41,6 +41,10 @@ def create_app():
 
     CORS(app)
 
+    @app.route("/", methods=["GET"])
+    def home():
+        return "ffmpeg api is running"
+
     @app.route("/read", methods=["GET"])
     def read_streams():
         path = getenv("MKV_DIRECTORY")
