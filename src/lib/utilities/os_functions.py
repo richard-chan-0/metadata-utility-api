@@ -133,7 +133,7 @@ def remove_directory(path: str):
         os.rmdir(path)
     except Exception as err:
         logger.error(err)
-        raise FileExistsError(err)
+        raise FileSystemError(err)
 
 
 def remove_file(path: str):
@@ -144,7 +144,7 @@ def remove_file(path: str):
         os.remove(path)
     except Exception as err:
         logger.error(err)
-        raise FileExistsError(err)
+        raise FileSystemError(err)
 
 
 def get_env(env_var: str) -> str:
@@ -172,21 +172,21 @@ def run_shell_command(command: Command):
 def is_dir(path: str):
     """function to determine if path is directory"""
     if not os.path.exists(path):
-        raise FileExistsError("path does not exist")
+        raise FileSystemError("path does not exist")
     return os.path.isdir(path)
 
 
 def is_file(path: str):
     """function to determine if path is directory"""
     if not os.path.exists(path):
-        raise FileExistsError("path does not exist")
+        raise FileSystemError("path does not exist")
     return os.path.isfile(path)
 
 
 def parse_path(path: str):
     """function to return directory path and file name"""
     if not os.path.exists(path):
-        raise FileExistsError("path does not exist")
+        raise FileSystemError("path does not exist")
     return os.path.split(path)
 
 
@@ -202,5 +202,5 @@ def get_first_file_path(path: str) -> str:
 
     files = get_files(path)
     if not files:
-        raise FileExistsError("directory is empty")
+        raise FileSystemError("directory is empty")
     return files[0].path

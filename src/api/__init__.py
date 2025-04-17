@@ -16,11 +16,11 @@ def register_errors(app):
 
     @app.errorhandler(RequestError)
     def handle_request_error(e):
-        return jsonify({"error with request": str(e)}), 400
+        return jsonify({"error": str(e)}), 400
 
     @app.errorhandler(ServiceError)
     def handle_service_error(e):
-        return jsonify({"error in app": str(e)}), 500
+        return jsonify({"error": str(e)}), 500
 
     @app.errorhandler(500)
     def handle_internal_server_error(e):
@@ -40,6 +40,10 @@ def create_app():
     register_errors(app)
 
     CORS(app)
+
+    @app.route("/", methods=["GET"])
+    def home():
+        return "ffmpeg api is running"
 
     @app.route("/read", methods=["GET"])
     def read_streams():
