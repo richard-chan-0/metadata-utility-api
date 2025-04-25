@@ -204,3 +204,11 @@ def get_first_file_path(path: str) -> str:
     if not files:
         raise FileSystemError("directory is empty")
     return files[0].path
+
+
+def get_files_from_path(path: str) -> Iterable[DirectoryFile]:
+    is_dir_path = is_dir(path)
+    if not is_dir_path:
+        raise FileSystemError("path is not a directory")
+
+    return get_files(path)

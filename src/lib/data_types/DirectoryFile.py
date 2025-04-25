@@ -38,3 +38,6 @@ class DirectoryFile:
     def get_episode_from_file_name(self) -> str:
         season_episode_matches = self.__get_episode_matches()
         return season_episode_matches
+
+    def __str__(self) -> str:
+        return f"{self.path}/{self.name}"

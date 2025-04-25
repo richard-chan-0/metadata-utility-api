@@ -7,7 +7,12 @@ from src.lib.exceptions.exceptions import ServiceError, RequestError
 from os import getenv
 from src.logic.mkvtoolnix import get_mkv_media_streams
 from src.logic.ffmpeg import get_media_streams, parse_streams
-from src.lib.utilities.os_functions import get_first_file_path, is_mkv
+from src.lib.utilities.os_functions import (
+    get_first_file_path,
+    is_mkv,
+    get_files_from_path,
+)
+from shutil import move
 
 logger = logging.getLogger(__name__)
 
@@ -58,5 +63,21 @@ def create_app():
             response = parse_streams(raw_streams)
 
         return jsonify(response)
+
+    @app.route("/transfer", methods=["GET"])
+    def transfer_files():
+        pull_path = getenv("MKV_PULL_DIRECTORY")
+        path = getenv("MKV_DIRECTORY")
+        if not path or not pull_path:
+            raise ServiceError("environment variable not set")
+
+        files = get_files_from_path(pull_path)
+        if not files:
+            return jsonify({"message": "no files to move"}), 200
+
+        for file in files:
+            logger.info(f"moving file {file.name} to {path}")
+            move(str(file), f"{path}/{file.name}")
+        return jsonify({"message": "files moved successfully"}), 200
 
     return app
