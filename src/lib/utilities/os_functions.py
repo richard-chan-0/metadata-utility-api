@@ -187,7 +187,8 @@ def parse_path(path: str):
     """function to return directory path and file name"""
     if not os.path.exists(path):
         raise FileSystemError("path does not exist")
-    return os.path.split(path)
+    split_path = os.path.split(path)
+    return split_path
 
 
 def is_mkv(path):

@@ -1,5 +1,5 @@
 from pytest import fixture
-from src.utilities.app_functions import read_dict
+from src.lib.utilities.app_functions import read_dict
 
 
 @fixture
