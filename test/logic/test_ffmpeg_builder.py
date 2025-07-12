@@ -4,16 +4,17 @@ from unittest.mock import patch
 
 
 def test_create_command_happy_path():
-    test_path = "test.mkv"
-    expected = f"ffmpeg -i {test_path} -map 0 -c copy -map -0:a:1 -map -0:s:1 -disposition:s:0 default -n {test_path}"
+    test_path = "test/test.mkv"
+    expected = f"ffmpeg -i {test_path} -map 0:v:0 -c copy -map 0:a:1 -map 0:s:1 -disposition:s:0 forced test/updated/test.mkv"
 
-    with patch("src.utilities.os_functions.os") as mock_os:
+    with patch("src.lib.utilities.os_functions.os") as mock_os:
         mock_os.path.exists.return_value = True
+        mock_os.path.split.return_value = ("test", "test.mkv")
 
         new_builder = FfmpegCommandBuilder(test_path)
         new_builder.add_stream(1, StreamType.AUDIO)
         new_builder.add_stream(1, StreamType.SUBTITLE)
         new_builder.set_default(0, StreamType.SUBTITLE)
-        new_builder.build()
+        command = new_builder.build()
 
-        assert expected == new_builder.print_command()
+        assert expected == str(command)
