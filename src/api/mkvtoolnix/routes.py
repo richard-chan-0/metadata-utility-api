@@ -26,6 +26,8 @@ def write_streams():
     default_subtitle = int(subtitles[0]) if subtitles else None
     audios = literal_eval(data.get("audios", []))
     default_audio = int(audios[0]) if audios else None
+    logger.info(f"setting default subtitle to {default_subtitle}")
+    logger.info(f"setting default audio to {default_audio}")
 
     if not default_audio and not default_subtitle:
         raise RequestError("no default data given")
