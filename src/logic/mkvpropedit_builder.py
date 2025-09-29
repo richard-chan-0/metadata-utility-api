@@ -1,8 +1,16 @@
 from src.lib.exceptions.exceptions import FileSystemError
 from src.lib.utilities.os_functions import is_file
 from src.lib.data_types.media_types import StreamType
-from src.lib.utilities.os_functions import parse_path, create_sub_directory
 from src.lib.data_types.Command import Command
+
+
+def get_stream_letter(stream_type):
+    if stream_type == StreamType.AUDIO:
+        return "a"
+    elif stream_type == StreamType.SUBTITLE:
+        return "s"
+    else:
+        raise ValueError("Invalid stream type")
 
 
 class MkvPropEditCommandBuilder:
@@ -17,17 +25,7 @@ class MkvPropEditCommandBuilder:
 
         self.__command.append(f"{file_path}")
 
-    def set_default(
-        self, stream_number: int, stream_type: StreamType, is_enabled: bool
-    ):
-        def get_stream_letter(stream_type):
-            if stream_type == StreamType.AUDIO:
-                return "a"
-            elif stream_type == StreamType.SUBTITLE:
-                return "s"
-            else:
-                raise ValueError("Invalid stream type")
-
+    def set_track(self, stream_number: int, stream_type: StreamType, is_enabled: bool):
         stream_letter = get_stream_letter(stream_type)
         default_command = [
             "--edit",

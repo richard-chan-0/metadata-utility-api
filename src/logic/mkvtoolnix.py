@@ -143,15 +143,15 @@ def build_command(
     if audio:
         for audio_stream in tracks["audio"]:
             if audio_stream.stream_number == audio:
-                builder.set_default(audio, StreamType.AUDIO, True)
+                builder.set_track(audio, StreamType.AUDIO, True)
             else:
-                builder.set_default(audio_stream.stream_number, StreamType.AUDIO, False)
+                builder.set_track(audio_stream.stream_number, StreamType.AUDIO, False)
     if subtitle:
         for subtitle_stream in tracks["subtitle"]:
-            if subtitle_stream.stream_number == audio:
-                builder.set_default(audio, StreamType.SUBTITLE, True)
+            if subtitle_stream.stream_number == subtitle:
+                builder.set_track(subtitle, StreamType.SUBTITLE, True)
             else:
-                builder.set_default(
+                builder.set_track(
                     subtitle_stream.stream_number, StreamType.SUBTITLE, False
                 )
 
