@@ -3,7 +3,6 @@ from src.lib.data_types.DirectoryFile import DirectoryFile
 from src.lib.data_types.ServiceArguments import ServiceArguments
 from src.lib.data_types.media_types import AudioStream, SubtitleStream, AttachmentStream
 from src.lib.utilities.app_functions import read_dict
-from re import match
 
 
 def create_file(dir_entry: DirEntry):

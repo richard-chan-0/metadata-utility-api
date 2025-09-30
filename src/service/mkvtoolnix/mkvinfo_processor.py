@@ -1,13 +1,9 @@
 from src.lib.data_types.Command import Command
 from src.lib.utilities.os_functions import run_shell_command
-from json import loads
-from src.lib.factories.factories import (
+from src.lib.factories.app_factories import (
     create_mkv_audio_stream,
     create_mkv_subtitle_stream,
 )
-from src.logic.mkvpropedit_builder import MkvPropEditCommandBuilder
-from src.lib.data_types.media_types import StreamType
-from typing import Iterable
 
 mkv_stream_constructors = {
     "audio": create_mkv_audio_stream,
@@ -131,28 +127,3 @@ def get_mkv_media_streams(path):
     mkv_payload = get_mkv_payload(mkv)
 
     return {"is_mkv": True, **parse_tracks(mkv_payload)}
-
-
-def build_command(
-    file_path: str,
-    audio: int,
-    subtitle: int,
-) -> Command:
-    tracks = get_mkv_media_streams(file_path)
-    builder = MkvPropEditCommandBuilder(file_path)
-    if audio:
-        for audio_stream in tracks["audio"]:
-            if audio_stream.stream_number == audio:
-                builder.set_track(audio, StreamType.AUDIO, True)
-            else:
-                builder.set_track(audio_stream.stream_number, StreamType.AUDIO, False)
-    if subtitle:
-        for subtitle_stream in tracks["subtitle"]:
-            if subtitle_stream.stream_number == subtitle:
-                builder.set_track(subtitle, StreamType.SUBTITLE, True)
-            else:
-                builder.set_track(
-                    subtitle_stream.stream_number, StreamType.SUBTITLE, False
-                )
-
-    return builder.build()

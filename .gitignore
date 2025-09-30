@@ -6,3 +6,6 @@
 .vscode
 .env
 /videos
+**/*.mkv
+**/*.mp4
+**/*.txt

@@ -4,7 +4,7 @@ from subprocess import run, DEVNULL
 from typing import Iterable, Callable
 
 from src.lib.exceptions.exceptions import FileSystemError
-from src.lib.factories.factories import create_file
+from src.lib.factories.app_factories import create_file
 from src.lib.data_types.DirectoryFile import DirectoryFile
 from src.lib.data_types.Command import Command
 import logging
@@ -16,7 +16,7 @@ ignore_files = [".DS_Store"]
 
 
 def get_files(path: str) -> Iterable[DirectoryFile]:
-    """function to get list of files from a path"""
+    """function to get file or list of files if directory from a path"""
     if not os.path.exists(path):
         raise FileSystemError(f"could not find: {path}")
 
