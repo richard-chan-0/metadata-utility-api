@@ -18,6 +18,7 @@
 
 - Use snake_case for Python functions.
 - Use type hints in Python code.
+- Unit tests should be written using pytest.
 
 # Framework
 

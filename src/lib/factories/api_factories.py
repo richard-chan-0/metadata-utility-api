@@ -24,8 +24,8 @@ def create_mkvtoolnix_merge_request(data):
     logger.info("Creating MKVToolNix merge request")
     filename = data.get("filename")
     output_filename = data.get("output_filename")
-    subtitles = literal_eval(data.get("subtitles", []))
-    audios = literal_eval(data.get("audios", []))
+    subtitles = literal_eval(data.get("subtitles", "[]"))
+    audios = literal_eval(data.get("audios", "[]"))
 
     return MkvToolNixMergeRequest(
         filename=filename,

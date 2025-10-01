@@ -1,4 +1,4 @@
-from src.logic.ffmpeg_builder import FfmpegCommandBuilder
+from src.service.ffmpeg_builder import FfmpegCommandBuilder
 from src.lib.data_types.media_types import StreamType
 from unittest.mock import patch
 

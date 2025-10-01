@@ -16,6 +16,8 @@ logger = logging.getLogger(__name__)
 
 mkvtoolnix = Blueprint("mkv", __name__, url_prefix="/mkv")
 
+# TODO: make write and merge endpoint able to accept bulk filename request
+
 
 @mkvtoolnix.route("/write", methods=["POST"])
 def write_streams():
@@ -35,8 +37,8 @@ def write_streams():
 
     command = build_edit_command(
         file_path=file_path,
-        audio=write_request.default_audio,
-        subtitle=write_request.default_subtitle,
+        default_audio=write_request.default_audio,
+        default_subtitle=write_request.default_subtitle,
         title=write_request.video_title,
     )
     shell_message = run_shell_command(command)
