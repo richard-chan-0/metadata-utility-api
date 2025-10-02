@@ -35,8 +35,8 @@ def build_edit_command(
 def build_merge_command(
     input_file: str,
     output_file: str,
-    audio_tracks: list = None,
-    subtitle_tracks: list = None,
+    audio_tracks: list,
+    subtitle_tracks: list,
 ) -> Command:
     builder = MkvMergeCommandBuilder(output_file)
     builder.set_input_file(input_file)

@@ -6,13 +6,13 @@ def deprecate_function():
 
 
 def read_dict(dict_path: str, dict_obj: dict):
-    keys = dict_path.split(".")
+    keys = dict_path.split(".") if "." in dict_path else [dict_path]
     for key in keys:
         if not isinstance(dict_obj, dict):
             return
 
         value = dict_obj.get(key)
-        if not value:
+        if value is None:
             return
         dict_obj = value
 
