@@ -3,6 +3,9 @@ from src.service.mkvtoolnix.mkvpropedit_builder import MkvPropEditCommandBuilder
 from src.service.mkvtoolnix.mkvmerge_builder import MkvMergeCommandBuilder
 from src.service.mkvtoolnix.mkvinfo_processor import get_mkv_media_streams
 from src.lib.data_types.media_types import StreamType
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 
 def get_mkvinfo(path: str) -> dict:

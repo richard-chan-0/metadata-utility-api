@@ -7,10 +7,11 @@ logger = getLogger(__name__)
 
 def create_mkvtoolnix_write_request(data):
     logger.info("Creating MKVToolNix write request")
+
     filename = data.get("filename")
-    video_title = data.get("title")
-    default_subtitle = data.get("subtitle")
-    default_audio = data.get("audio")
+    video_title = data.get("video_title")
+    default_subtitle = data.get("default_subtitle")
+    default_audio = data.get("default_audio")
 
     return MkvToolNixWriteRequest(
         filename=filename,
@@ -24,8 +25,8 @@ def create_mkvtoolnix_merge_request(data):
     logger.info("Creating MKVToolNix merge request")
     filename = data.get("filename")
     output_filename = data.get("output_filename")
-    subtitles = literal_eval(data.get("subtitles", "[]"))
-    audios = literal_eval(data.get("audios", "[]"))
+    subtitles = literal_eval(data.get("subtitle_tracks", "[]"))
+    audios = literal_eval(data.get("audio_tracks", "[]"))
 
     return MkvToolNixMergeRequest(
         filename=filename,
