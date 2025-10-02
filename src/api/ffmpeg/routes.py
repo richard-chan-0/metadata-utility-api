@@ -1,13 +1,10 @@
 from flask import Blueprint, request, jsonify
 import logging
-from src.logic import (
-    get_media_streams,
-    parse_streams,
+
+from src.service.ffmpeg import (
     build_command,
-    run_shell_command,
-    get_mkv_media_streams,
 )
-from src.lib.utilities.os_functions import get_files
+from src.lib.utilities.os_functions import get_files, run_shell_command
 from ast import literal_eval
 from os import getenv
 

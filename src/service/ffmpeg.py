@@ -1,8 +1,8 @@
 from src.lib.utilities.os_functions import run_shell_command, get_first_file_path
 from src.lib.data_types.media_types import *
-from src.logic.ffmpeg_builder import FfmpegCommandBuilder
+from src.service.ffmpeg_builder import FfmpegCommandBuilder
 from src.lib.data_types.Command import Command
-from src.lib.factories.factories import (
+from src.lib.factories.app_factories import (
     create_audio_stream,
     create_subtitle_stream,
     create_attachment_stream,

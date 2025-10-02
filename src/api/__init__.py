@@ -5,8 +5,8 @@ from src.api.ffmpeg.routes import ffmpeg
 from src.api.mkvtoolnix.routes import mkvtoolnix
 from src.lib.exceptions.exceptions import ServiceError, RequestError
 from os import getenv
-from src.logic.mkvtoolnix import get_mkv_media_streams
-from src.logic.ffmpeg import get_media_streams, parse_streams
+from src.service.mkvtoolnix.mkvtoolnix_service import get_mkv_media_streams
+from src.service.ffmpeg import get_media_streams, parse_streams
 from src.lib.utilities.os_functions import get_first_file_path, is_mkv
 
 logger = logging.getLogger(__name__)

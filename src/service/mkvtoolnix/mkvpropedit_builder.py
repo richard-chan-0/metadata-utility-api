@@ -4,7 +4,7 @@ from src.lib.data_types.media_types import StreamType
 from src.lib.data_types.Command import Command
 
 
-def get_stream_letter(stream_type):
+def get_track_prefix(stream_type):
     if stream_type == StreamType.AUDIO:
         return "a"
     elif stream_type == StreamType.SUBTITLE:
@@ -26,7 +26,7 @@ class MkvPropEditCommandBuilder:
         self.__command.append(f"{file_path}")
 
     def set_track(self, stream_number: int, stream_type: StreamType, is_enabled: bool):
-        stream_letter = get_stream_letter(stream_type)
+        stream_letter = get_track_prefix(stream_type)
         default_command = [
             "--edit",
             f"track:{stream_letter}{stream_number}",
@@ -34,6 +34,17 @@ class MkvPropEditCommandBuilder:
             f"flag-default={'1' if is_enabled else '0'}",
         ]
         self.__command.extend(default_command)
+
+        return self
+
+    def set_title(self, title: str):
+        title_command = [
+            "--edit",
+            "info",
+            "--set",
+            f"title={title}",
+        ]
+        self.__command.extend(title_command)
 
         return self
 

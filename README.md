@@ -1,13 +1,14 @@
-# track-utility-api
+# Metadata Utility API
 
 ## Description
 
-This project provides a Flask-based API for managing and transforming media files using ffmpeg and mkvtoolnix. The main function of the utility is to allow users to select the preferred default audio and/or subtitle tracks for their video files, as well as to inspect and manipulate MKV file metadata.
+This project provides a Flask-based API for managing and transforming media file metadata using tools like ffmpeg and mkvtoolnix. The utility allows users to inspect, modify, and manage metadata such as default audio/subtitle tracks, titles, and more.
 
 ## Features
 
 - **Stream Inspection**: Read and list audio, subtitle, and attachment streams from video files (supports both ffmpeg and mkvtoolnix).
-- **Default Track Selection**: Set default audio and subtitle tracks for all files in a directory.
+- **Default Track Selection**: Set default audio and subtitle tracks for video files.
+- **Title Management**: Add or modify the title metadata of MKV files.
 - **Batch Processing**: Apply changes to all files in a given directory.
 - **API Endpoints**:
   - `GET /`: Health check endpoint.
@@ -53,6 +54,19 @@ This project provides a Flask-based API for managing and transforming media file
      ```
 
    - **Set Default Tracks (mkvtoolnix)**
+
+     ```sh
+     curl -X POST -F "audios=[0]" -F "subtitles=[1]" http://localhost:5000/mkv/default-tracks
+     ```
+
+   - **Set Title**
+
+     ```sh
+     curl -X POST -F "file=/path/to/file.mkv" -F "title=My Custom Title" http://localhost:5000/mkv/set-title
+     ```
+
+   - **Remove Tracks**
+
      ```sh
      curl -X POST -F "audios=[0]" -F "subtitles=[1]" http://localhost:5000/mkv/write
      ```
