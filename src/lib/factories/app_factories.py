@@ -11,11 +11,7 @@ from src.lib.data_types.media_types import (
 from src.lib.utilities.app_functions import read_dict
 
 
-def create_file(dir_entry: DirEntry):
-    return DirectoryFile(dir_entry.name, dir_entry.path)
-
-
-def create_file(name: str, path: str):
+def create_file_by_name(name: str, path: str):
     return DirectoryFile(name, path)
 
 

@@ -4,7 +4,7 @@ from subprocess import run, DEVNULL
 from typing import Iterable, Callable
 
 from src.lib.exceptions.exceptions import FileSystemError
-from src.lib.factories.app_factories import create_file
+from src.lib.factories.app_factories import create_file_by_name
 from src.lib.data_types.DirectoryFile import DirectoryFile
 from src.lib.data_types.Command import Command
 import logging
@@ -23,11 +23,11 @@ def get_files(path: str) -> Iterable[DirectoryFile]:
     if is_file(path):
         filename = os.path.basename(path)
         file_path = os.path.normpath(path)
-        return [create_file(filename, file_path)]
+        return [create_file_by_name(filename, file_path)]
 
     with os.scandir(path) as entries:
         return [
-            create_file(entry.name, entry.path)
+            create_file_by_name(entry.name, entry.path)
             for entry in entries
             if os.path.isfile(entry.path) and entry.name not in ignore_files
         ]
@@ -49,7 +49,7 @@ def get_sub_directories(directory: str) -> Iterable[DirectoryFile]:
 
     with os.scandir(directory) as entries:
         return [
-            create_file(entry.name, entry.path)
+            create_file_by_name(entry.name, entry.path)
             for entry in entries
             if os.path.isdir(entry.path)
         ]

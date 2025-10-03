@@ -97,4 +97,4 @@ def merge_streams():
         shell_message = run_shell_command(cmd)
         logger.info(shell_message)
 
-    return jsonify(f"successfully merged {input_filename} to {output_filename}")
+    return jsonify(f"successfully merged all files")
