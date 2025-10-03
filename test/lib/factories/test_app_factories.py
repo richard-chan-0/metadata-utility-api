@@ -58,7 +58,7 @@ def test_create_subtitle_stream():
 
 def test_create_mkv_audio_stream():
     track_data = {"Language": "es", "is_default": "1", "Name": "Spanish Audio"}
-    audio_stream = create_mkv_audio_stream(track_data, 2)
+    audio_stream = create_mkv_audio_stream(track_data, 2, 1, 1)
     assert isinstance(audio_stream, AudioStream)
     assert audio_stream.language == "es"
     assert audio_stream.title == "Spanish Audio"
@@ -68,7 +68,7 @@ def test_create_mkv_audio_stream():
 
 def test_create_mkv_subtitle_stream():
     track_data = {"Language": "de", "is_default": "0", "Name": "German Subtitles"}
-    subtitle_stream = create_mkv_subtitle_stream(track_data, 3)
+    subtitle_stream = create_mkv_subtitle_stream(track_data, 3, 1, 1)
     assert isinstance(subtitle_stream, SubtitleStream)
     assert subtitle_stream.language == "de"
     assert subtitle_stream.title == "German Subtitles"

@@ -24,19 +24,6 @@ def client():
 
 
 def test_write_streams_success(client: FlaskClient):
-<<<<<<< HEAD
-    with (
-        patch("src.api.mkvtoolnix.routes.getenv", return_value="/mock/path"),
-        patch("src.api.mkvtoolnix.routes.get_files", return_value=True),
-        patch(
-            "src.api.mkvtoolnix.routes.create_mkvtoolnix_write_request"
-        ) as mock_request,
-        patch("src.api.mkvtoolnix.routes.build_edit_command"),
-        patch(
-            "src.api.mkvtoolnix.routes.run_shell_command", return_value="success"
-        ) as mock_run,
-    ):
-=======
     with patch("src.api.mkvtoolnix.routes.getenv", return_value="/mock/path"), patch(
         "src.api.mkvtoolnix.routes.get_files", return_value=True
     ), patch(
@@ -46,7 +33,6 @@ def test_write_streams_success(client: FlaskClient):
     ) as mock_command, patch(
         "src.api.mkvtoolnix.routes.run_shell_command", return_value="success"
     ) as mock_run:
->>>>>>> ad0925b (add more tests)
 
         mock_request.side_effect = lambda data: MagicMock(
             filename=data["filename"],
@@ -55,15 +41,12 @@ def test_write_streams_success(client: FlaskClient):
             video_title=data.get("video_title", ""),
         )
 
-<<<<<<< HEAD
-=======
         mock_command.side_effect = (
             lambda file_path, default_audio, default_subtitle, title: MagicMock(
                 get_command=lambda: f"edit command for {file_path}"
             )
         )
 
->>>>>>> ad0925b (add more tests)
         response = client.post(
             "/mkv/write",
             json={
@@ -82,24 +65,7 @@ def test_write_streams_success(client: FlaskClient):
 
         assert response.status_code == 200
         assert b"successfully reset default tracks" in response.data
-<<<<<<< HEAD
-        assert mock_run.call_count == 2
-
-
-def test_merge_streams_success(client: FlaskClient):
-    with (
-        patch("src.api.mkvtoolnix.routes.getenv", return_value="/mock/path"),
-        patch("src.api.mkvtoolnix.routes.get_files", return_value=True),
-        patch(
-            "src.api.mkvtoolnix.routes.create_mkvtoolnix_merge_request"
-        ) as mock_request,
-        patch("src.api.mkvtoolnix.routes.build_merge_command") as mock_command,
-        patch(
-            "src.api.mkvtoolnix.routes.run_shell_command", return_value="success"
-        ) as mock_run,
-    ):
-=======
-        assert mock_run.call_count == 0  # Commands are logged, not executed
+        assert mock_run.call_count == 2  # Commands are logged, not executed
 
 
 def test_merge_streams_success(client: FlaskClient):
@@ -112,7 +78,6 @@ def test_merge_streams_success(client: FlaskClient):
     ) as mock_command, patch(
         "src.api.mkvtoolnix.routes.run_shell_command", return_value="success"
     ) as mock_run:
->>>>>>> ad0925b (add more tests)
 
         mock_request.side_effect = lambda data: MagicMock(
             filename=data["filename"],
@@ -133,35 +98,21 @@ def test_merge_streams_success(client: FlaskClient):
                 "file1.mkv": {
                     "filename": "file1.mkv",
                     "output_filename": "output1.mkv",
-<<<<<<< HEAD
-                    "audio_tracks": [0],
-                    "subtitle_tracks": [1],
-=======
                     "audio_tracks": "[0]",
                     "subtitle_tracks": "[1]",
->>>>>>> ad0925b (add more tests)
                 },
                 "file2.mkv": {
                     "filename": "file2.mkv",
                     "output_filename": "output2.mkv",
-<<<<<<< HEAD
-                    "audio_tracks": [2],
-                    "subtitle_tracks": [3],
-=======
                     "audio_tracks": "[2]",
                     "subtitle_tracks": "[3]",
->>>>>>> ad0925b (add more tests)
                 },
             },
         )
 
         assert response.status_code == 200
-<<<<<<< HEAD
-        assert mock_run.call_count == 2
-=======
         assert b"successfully merged all files" in response.data
-        assert mock_run.call_count == 0  # Commands are logged, not executed
->>>>>>> ad0925b (add more tests)
+        assert mock_run.call_count == 2  # Commands are logged, not executed
 
 
 def test_write_streams_no_env_var(client: FlaskClient):
@@ -180,9 +131,6 @@ def test_merge_streams_no_files(client: FlaskClient):
         response = client.post(
             "/mkv/merge",
             json={
-<<<<<<< HEAD
-                "file1.mkv": {"filename": "file1.mkv", "output_filename": "output1.mkv"}
-=======
                 "file1.mkv": {
                     "filename": "file1.mkv",
                     "output_filename": "output1.mkv",
@@ -195,7 +143,6 @@ def test_merge_streams_no_files(client: FlaskClient):
                     "audio_tracks": "[2]",
                     "subtitle_tracks": "[3]",
                 },
->>>>>>> ad0925b (add more tests)
             },
         )
         assert response.status_code == 500
