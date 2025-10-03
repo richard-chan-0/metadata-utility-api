@@ -1,7 +1,13 @@
 from posix import DirEntry
 from src.lib.data_types.DirectoryFile import DirectoryFile
 from src.lib.data_types.ServiceArguments import ServiceArguments
-from src.lib.data_types.media_types import AudioStream, SubtitleStream, AttachmentStream
+from src.lib.data_types.media_types import (
+    AudioStream,
+    SubtitleStream,
+    AttachmentStream,
+    MkvSubtitleStream,
+    MkvAudioStream,
+)
 from src.lib.utilities.app_functions import read_dict
 
 
@@ -51,23 +57,34 @@ def get_language(track: dict):
     return "no language"
 
 
-def create_mkv_subtitle_stream(track: dict, subtitle_number: int):
+def create_mkv_subtitle_stream(
+    track: dict,
+    subtitle_number: int,
+    absolute_track_number: int,
+    merge_track_number: int,
+):
     language = get_language(track)
-    return SubtitleStream(
+    return MkvSubtitleStream(
         stream_number=subtitle_number,
         language=language,
         is_default=track["is_default"] == "1" if "is_default" in track else False,
         title=track["Name"] if "Name" in track else "",
+        absolute_track_number=absolute_track_number,
+        merge_track_number=merge_track_number,
     )
 
 
-def create_mkv_audio_stream(track: dict, audio_number: int):
+def create_mkv_audio_stream(
+    track: dict, audio_number: int, absolute_track_number: int, merge_track_number: int
+):
     language = get_language(track)
-    return AudioStream(
+    return MkvAudioStream(
         stream_number=audio_number,
         language=language,
         is_default=track["is_default"] == "1" if "is_default" in track else False,
         title=track["Name"] if "Name" in track else "",
+        absolute_track_number=absolute_track_number,
+        merge_track_number=merge_track_number,
     )
 
 

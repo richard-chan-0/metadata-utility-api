@@ -49,9 +49,8 @@ def write_streams():
 
     logger.info("write commands built, executing now...")
     for cmd in write_commands:
-        logger.info(f"Running command: {cmd.get_command()}")
-        # shell_message = run_shell_command(cmd)
-        # logger.info(shell_message)
+        shell_message = run_shell_command(cmd)
+        logger.info(shell_message)
 
     return jsonify("successfully reset default tracks for files in path")
 
@@ -95,8 +94,7 @@ def merge_streams():
 
     logger.info("merge commands built, executing now...")
     for cmd in merge_commands:
-        logger.info(f"Running command: {cmd.get_command()}")
-        # shell_message = run_shell_command(cmd)
-        # logger.info(shell_message)
+        shell_message = run_shell_command(cmd)
+        logger.info(shell_message)
 
     return jsonify(f"successfully merged {input_filename} to {output_filename}")

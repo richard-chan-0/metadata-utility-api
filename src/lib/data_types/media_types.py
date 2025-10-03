@@ -22,11 +22,23 @@ class AudioStream(MediaStream):
 
 
 @dataclass
+class MkvAudioStream(AudioStream):
+    absolute_track_number: int
+    merge_track_number: int
+
+
+@dataclass
 class SubtitleStream(MediaStream):
     stream_number: int
     title: str
     language: str
     is_default: bool
+
+
+@dataclass
+class MkvSubtitleStream(SubtitleStream):
+    absolute_track_number: int
+    merge_track_number: int
 
 
 @dataclass
