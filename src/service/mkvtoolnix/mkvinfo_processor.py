@@ -4,6 +4,7 @@ from src.lib.factories.app_factories import (
     create_mkv_audio_stream,
     create_mkv_subtitle_stream,
 )
+from re import findall
 
 mkv_stream_constructors = {
     "audio": create_mkv_audio_stream,
@@ -103,6 +104,17 @@ def get_mkv_payload(mkv):
     return mkv_parsed
 
 
+def get_track_number(track_number_str: str) -> tuple[int, int]:
+    """
+    parses track number in following format and returns list of two integers
+    ex. 2 (track ID for mkvmerge & mkvextract: 1)
+    """
+    matches = findall(r"(\d+)", track_number_str)
+    if not matches:
+        return (-1, -1)
+    return tuple([int(num) for num in matches])
+
+
 def parse_tracks(mkv):
     mkv_tracks = {"audio": [], "subtitle": []}
     tracks = mkv["Segment"]["Tracks"]["Track"]
@@ -112,8 +124,15 @@ def parse_tracks(mkv):
             continue
 
         media_type = track_type if track_type != "subtitles" else "subtitle"
+        relative_track_number = len(mkv_tracks[media_type]) + 1
+        absolute_track_number, merge_track_number = get_track_number(
+            track["Track number"]
+        )
+
         stream_function = mkv_stream_constructors[track_type]
-        stream = stream_function(track, len(mkv_tracks[media_type]) + 1)
+        stream = stream_function(
+            track, relative_track_number, absolute_track_number, merge_track_number
+        )
         mkv_tracks[media_type].append(stream)
 
     return mkv_tracks
@@ -123,6 +142,7 @@ def get_mkv_media_streams(path):
     mkv = probe_mkv(path)
     if not mkv:
         return {}
+    print(mkv)
 
     mkv_payload = get_mkv_payload(mkv)
 
