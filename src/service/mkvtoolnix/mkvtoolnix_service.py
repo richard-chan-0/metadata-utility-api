@@ -21,11 +21,24 @@ def build_edit_command(
     default_subtitle: int,
     title: str = None,
 ) -> Command:
+    info = get_mkvinfo(file_path)
     builder = MkvPropEditCommandBuilder(file_path)
     if default_audio:
-        builder.set_track(default_audio, StreamType.AUDIO, True)
+        audios = info["audio"]
+        for audio in audios:
+            builder.set_track(
+                audio.stream_number,
+                StreamType.AUDIO,
+                int(audio.stream_number) == int(default_audio),
+            )
     if default_subtitle:
-        builder.set_track(default_subtitle, StreamType.SUBTITLE, True)
+        subtitles = info["subtitle"]
+        for subtitle in subtitles:
+            builder.set_track(
+                subtitle.stream_number,
+                StreamType.SUBTITLE,
+                int(subtitle.stream_number) == int(default_subtitle),
+            )
     if title:
         builder.set_title(title)
 

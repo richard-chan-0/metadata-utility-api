@@ -38,3 +38,9 @@ def test_invalid_file_path():
 def test_invalid_stream_type(builder):
     with pytest.raises(ValueError):
         builder.set_track(1, "INVALID_TYPE", True)
+
+
+def test_forced_flag_is_zero(builder):
+    builder.set_track(1, StreamType.AUDIO, True)
+    command = builder.build().get_command()
+    assert "flag-forced=0" in command
