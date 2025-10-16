@@ -25,13 +25,15 @@ class MkvPropEditCommandBuilder:
 
         self.__command.append(f"{file_path}")
 
-    def set_track(self, stream_number: int, stream_type: StreamType, is_enabled: bool):
+    def set_track(self, stream_number: int, stream_type: StreamType, is_priority: bool):
         stream_letter = get_track_prefix(stream_type)
         default_command = [
             "--edit",
             f"track:{stream_letter}{stream_number}",
             "--set",
-            f"flag-default={'1' if is_enabled else '0'}",
+            f"flag-default={'1' if is_priority else '0'}",
+            "--set",
+            "flag-forced=0",
         ]
         self.__command.extend(default_command)
 

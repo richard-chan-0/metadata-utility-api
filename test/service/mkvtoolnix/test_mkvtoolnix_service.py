@@ -10,11 +10,20 @@ from src.lib.data_types.media_types import StreamType
 
 
 def test_build_edit_command():
-    with patch(
-        "src.service.mkvtoolnix.mkvtoolnix_service.MkvPropEditCommandBuilder"
-    ) as MockBuilder:
+    with (
+        patch(
+            "src.service.mkvtoolnix.mkvtoolnix_service.MkvPropEditCommandBuilder"
+        ) as MockBuilder,
+        patch(
+            "src.service.mkvtoolnix.mkvtoolnix_service.get_mkvinfo"
+        ) as mock_get_mkvinfo,
+    ):
         mock_builder = MockBuilder.return_value
         mock_builder.build.return_value = Command("mock_command")
+        mock_get_mkvinfo.return_value = {
+            "audio": [MagicMock(stream_number=1), MagicMock(stream_number=2)],
+            "subtitle": [MagicMock(stream_number=2), MagicMock(stream_number=3)],
+        }
 
         command = build_edit_command(
             file_path="/path/to/file.mkv",
