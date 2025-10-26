@@ -23,12 +23,14 @@ def create_audio_stream(stream: dict):
     language = read_dict("tags.language", stream)
     title = read_dict("tags.title", stream)
     is_default = bool(read_dict("disposition.default", stream))
+    is_forced = False
     stream_number = read_dict("index", stream)
     return AudioStream(
         stream_number=stream_number,
         language=language,
         is_default=is_default,
         title=title,
+        is_forced=is_forced,
     )
 
 
@@ -36,12 +38,14 @@ def create_subtitle_stream(stream: dict):
     language = read_dict("tags.language", stream)
     title = read_dict("tags.title", stream)
     is_default = bool(read_dict("disposition.default", stream))
+    is_forced = False
     stream_number = read_dict("index", stream)
     return SubtitleStream(
         stream_number=stream_number,
         language=language,
         is_default=is_default,
         title=title,
+        is_forced=is_forced,
     )
 
 
@@ -51,6 +55,28 @@ def get_language(track: dict):
             return track[key]
 
     return "no language"
+
+
+def get_is_attribute_enabled(attribute: str, track: dict):
+    if attribute in track:
+        return track[attribute] == "1"
+    return False
+
+
+def get_is_default(track: dict):
+    keys = ['"Default track" flag', "is_default"]
+    for key in keys:
+        if get_is_attribute_enabled(key, track):
+            return True
+    return False
+
+
+def get_is_forced(track: dict):
+    keys = ['"Forced track" flag', "is_forced"]
+    for key in keys:
+        if get_is_attribute_enabled(key, track):
+            return True
+    return False
 
 
 def create_mkv_subtitle_stream(
@@ -63,7 +89,8 @@ def create_mkv_subtitle_stream(
     return MkvSubtitleStream(
         stream_number=subtitle_number,
         language=language,
-        is_default=track["is_default"] == "1" if "is_default" in track else False,
+        is_default=get_is_default(track),
+        is_forced=get_is_forced(track),
         title=track["Name"] if "Name" in track else "",
         absolute_track_number=absolute_track_number,
         merge_track_number=merge_track_number,
@@ -77,7 +104,8 @@ def create_mkv_audio_stream(
     return MkvAudioStream(
         stream_number=audio_number,
         language=language,
-        is_default=track["is_default"] == "1" if "is_default" in track else False,
+        is_default=get_is_default(track),
+        is_forced=get_is_forced(track),
         title=track["Name"] if "Name" in track else "",
         absolute_track_number=absolute_track_number,
         merge_track_number=merge_track_number,

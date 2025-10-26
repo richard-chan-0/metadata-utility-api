@@ -142,7 +142,6 @@ def get_mkv_media_streams(path):
     mkv = probe_mkv(path)
     if not mkv:
         return {}
-    print(mkv)
 
     mkv_payload = get_mkv_payload(mkv)
 

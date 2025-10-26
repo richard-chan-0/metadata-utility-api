@@ -95,18 +95,20 @@ def test_merge_streams_success(client: FlaskClient):
         response = client.post(
             "/mkv/merge",
             json={
-                "file1.mkv": {
-                    "filename": "file1.mkv",
-                    "output_filename": "output1.mkv",
-                    "audio_tracks": "[0]",
-                    "subtitle_tracks": "[1]",
-                },
-                "file2.mkv": {
-                    "filename": "file2.mkv",
-                    "output_filename": "output2.mkv",
-                    "audio_tracks": "[2]",
-                    "subtitle_tracks": "[3]",
-                },
+                "changes": [
+                    {
+                        "filename": "file1.mkv",
+                        "output_filename": "output1.mkv",
+                        "audio_tracks": "[0]",
+                        "subtitle_tracks": "[1]",
+                    },
+                    {
+                        "filename": "file2.mkv",
+                        "output_filename": "output2.mkv",
+                        "audio_tracks": "[2]",
+                        "subtitle_tracks": "[3]",
+                    },
+                ]
             },
         )
 
@@ -131,18 +133,20 @@ def test_merge_streams_no_files(client: FlaskClient):
         response = client.post(
             "/mkv/merge",
             json={
-                "file1.mkv": {
-                    "filename": "file1.mkv",
-                    "output_filename": "output1.mkv",
-                    "audio_tracks": "[0]",
-                    "subtitle_tracks": "[1]",
-                },
-                "file2.mkv": {
-                    "filename": "file2.mkv",
-                    "output_filename": "output2.mkv",
-                    "audio_tracks": "[2]",
-                    "subtitle_tracks": "[3]",
-                },
+                "changes": [
+                    {
+                        "filename": "file1.mkv",
+                        "output_filename": "output1.mkv",
+                        "audio_tracks": "[0]",
+                        "subtitle_tracks": "[1]",
+                    },
+                    {
+                        "filename": "file2.mkv",
+                        "output_filename": "output2.mkv",
+                        "audio_tracks": "[2]",
+                        "subtitle_tracks": "[3]",
+                    },
+                ]
             },
         )
         assert response.status_code == 500
