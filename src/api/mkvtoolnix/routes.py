@@ -66,9 +66,9 @@ def merge_streams():
 
     merge_commands = []
 
-    for file_name, changes in data.items():
-        logger.info(f"processing file: {file_name} with changes: {changes}")
-        merge_request = create_mkvtoolnix_merge_request(changes)
+    for change in data["changes"]:
+        logger.info(f"processing file: {change['filename']} with changes: {change}")
+        merge_request = create_mkvtoolnix_merge_request(change)
         input_filename = merge_request.filename
         output_filename = merge_request.output_filename
 

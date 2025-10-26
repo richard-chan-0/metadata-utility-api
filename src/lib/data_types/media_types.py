@@ -19,6 +19,7 @@ class AudioStream(MediaStream):
     title: str
     language: str
     is_default: bool
+    is_forced: bool
 
 
 @dataclass
@@ -33,6 +34,7 @@ class SubtitleStream(MediaStream):
     title: str
     language: str
     is_default: bool
+    is_forced: bool
 
 
 @dataclass
