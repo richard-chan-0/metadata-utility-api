@@ -72,7 +72,7 @@ def get_is_default(track: dict):
 
 
 def get_is_forced(track: dict):
-    keys = ['"Forced track" flag', "is_forced"]
+    keys = ["is_forced", '"Forced display" flag']
     for key in keys:
         if get_is_attribute_enabled(key, track):
             return True

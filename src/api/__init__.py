@@ -7,7 +7,7 @@ from src.lib.exceptions.exceptions import ServiceError, RequestError
 from os import getenv
 from src.service.mkvtoolnix.mkvtoolnix_service import get_mkv_media_streams
 from src.service.ffmpeg import get_media_streams, parse_streams
-from src.lib.utilities.os_functions import get_first_file_path, is_mkv
+from src.lib.utilities.os_functions import get_files, is_mkv
 
 logger = logging.getLogger(__name__)
 
@@ -50,13 +50,15 @@ def create_app():
         path = getenv("MKV_DIRECTORY")
         if not path:
             raise ServiceError("environment variable not set")
-        file_path = get_first_file_path(path)
-        if is_mkv(file_path):
-            response = get_mkv_media_streams(file_path)
-        else:
-            raw_streams = get_media_streams(file_path)
-            response = parse_streams(raw_streams)
+        file_paths = get_files(path)
+        streams = {}
+        for file_path in file_paths:
+            if is_mkv(file_path.path):
+                streams[file_path.name] = get_mkv_media_streams(file_path.path)
+            else:
+                raw_streams = get_media_streams(file_path.path)
+                streams[file_path.name] = parse_streams(raw_streams)
 
-        return jsonify(response)
+        return streams
 
     return app
