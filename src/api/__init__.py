@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import logging
 from src.api.ffmpeg.routes import ffmpeg
@@ -8,6 +8,7 @@ from os import getenv
 from src.service.mkvtoolnix.mkvtoolnix_service import get_mkv_media_streams
 from src.service.ffmpeg import get_media_streams, parse_streams
 from src.lib.utilities.os_functions import get_files, is_mkv
+from src.lib.utilities.path_validator import validate_query_path
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ def register_errors(app):
 
 
 def create_app():
-    app = Flask("ffmpeg utility")
+    app = Flask("metadata utility")
 
     app.register_blueprint(ffmpeg)
     app.register_blueprint(mkvtoolnix)
@@ -47,7 +48,9 @@ def create_app():
 
     @app.route("/read", methods=["GET"])
     def read_streams():
-        path = getenv("MKV_DIRECTORY")
+        query = request.args.get("path")
+        validate_query_path(query)
+        path = query if query else getenv("MKV_DIRECTORY")
         if not path:
             raise ServiceError("environment variable not set")
         file_paths = get_files(path)
